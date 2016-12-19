@@ -2,13 +2,9 @@ package io.logz.guice.jersey;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
-import com.google.inject.Provides;
 import com.google.inject.servlet.ServletModule;
 import io.logz.guice.jersey.configuration.JerseyModuleConfiguration;
-import org.glassfish.hk2.api.ServiceLocator;
 
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriInfo;
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -28,16 +24,6 @@ public class JerseyModule extends AbstractModule {
     protected void configure() {
         install(new ServletModule());
         bind(JerseyServer.class).toInstance(new JerseyServer(jerseyModuleConfiguration, injectorSupplier));
-    }
-
-    @Provides
-    private SecurityContext securityContext(ServiceLocator locator) {
-        return locator.getService(SecurityContext.class);
-    }
-
-    @Provides
-    private UriInfo uriInfo(ServiceLocator locator) {
-        return locator.getService(UriInfo.class);
     }
 
 }
