@@ -1,4 +1,4 @@
-package io.logz.guice.jersey;
+package io.logz.guice.jersey.resources;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -8,7 +8,8 @@ import javax.ws.rs.Path;
  */
 @Path("test")
 public class TestResource {
-    static final String MESSAGE = "Hello World!";
+
+    public static final String MESSAGE = "Hello World!";
 
     @GET
     public String sayHello() {

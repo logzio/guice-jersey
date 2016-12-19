@@ -1,20 +1,14 @@
 package io.logz.guice.jersey;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.Module;
-import io.logz.guice.jersey.configuration.JerseyModuleConfiguration;
+import io.logz.guice.jersey.resources.PingResource;
+import io.logz.guice.jersey.resources.TestResource;
+import org.apache.mina.util.AvailablePortFinder;
 import org.glassfish.jersey.server.ResourceConfig;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.Assert.assertEquals;
 
@@ -23,36 +17,45 @@ import static org.junit.Assert.assertEquals;
  */
 public class JerseyServerTest {
 
-    private JerseyServer jerseyServer;
-
-    @Before
-    public void setUp() throws Exception {
+    @Test
+    public void testBasicConfiguration() throws Exception {
+        int port = AvailablePortFinder.getNextAvailable();
         ResourceConfig resourceConfig = new ResourceConfig().registerClasses(TestResource.class);
-        JerseyModuleConfiguration jerseyModuleConfiguration = new JerseyModuleConfiguration(8080, resourceConfig, "/resources");
-        AtomicReference<Injector> injectorRef = new AtomicReference<>();
+        JerseyServer server = JerseyServerHelper.createServer(port, resourceConfig);
 
-        List<Module> modules = new ArrayList<>();
-        modules.add(new JerseyModule(jerseyModuleConfiguration, injectorRef::get));
+        try {
+            server.start();
 
-        Injector injector = Guice.createInjector(modules);
-        injectorRef.set(injector);
+            Client client = ClientBuilder.newClient();
+            WebTarget target = client.target("http://localhost:" + port).path("resources").path("test");
 
-        jerseyServer = injector.getInstance(JerseyServer.class);
-        jerseyServer.start();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        jerseyServer.stop();
+            String response = target.request().get().readEntity(String.class);
+            assertEquals(TestResource.MESSAGE, response);
+        } finally {
+            server.stop();
+        }
     }
 
     @Test
-    public void sanityCheck() throws InterruptedException {
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target("http://localhost:8080").path("resources").path("test");
+    public void testPackageScanningConfiguration() throws Exception {
+        int port = AvailablePortFinder.getNextAvailable();
+        ResourceConfig resourceConfig = new ResourceConfig().packages(getClass().getPackage().toString());
+        JerseyServer server = JerseyServerHelper.createServer(port, resourceConfig);
 
-        String response = target.request().get().readEntity(String.class);
-        assertEquals(TestResource.MESSAGE, response);
+        try {
+            server.start();
+
+            Client client = ClientBuilder.newClient();
+            WebTarget target = client.target("http://localhost:" + port).path("resources");
+
+            String testResourceResponse = target.path("test").request().get().readEntity(String.class);
+            assertEquals(TestResource.MESSAGE, testResourceResponse);
+
+            String pingResourceResponse = target.path("ping").request().get().readEntity(String.class);
+            assertEquals(PingResource.MESSAGE, pingResourceResponse);
+        } finally {
+            server.stop();
+        }
     }
 
 }
