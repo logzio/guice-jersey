@@ -12,28 +12,28 @@ import java.util.Objects;
 public class JerseyModuleConfiguration {
 
     private final List<ServerConnectorConfiguration> serverConnectors;
-    private final Class<? extends ResourceConfig> resourceConfigClass;
+    private final ResourceConfig resourceConfig;
     private final String contextRoot;
 
-    public JerseyModuleConfiguration(int port, Class<? extends ResourceConfig> resourceConfigClass, String contextRoot) {
-        this(new ServerConnectorConfiguration(port), resourceConfigClass, contextRoot);
+    public JerseyModuleConfiguration(int port, ResourceConfig resourceConfig, String contextRoot) {
+        this(new ServerConnectorConfiguration(port), resourceConfig, contextRoot);
     }
 
-    public JerseyModuleConfiguration(String host, int port, Class<ResourceConfig> resourceConfigClass, String contextRoot) {
-        this(new ServerConnectorConfiguration(host, port), resourceConfigClass, contextRoot);
+    public JerseyModuleConfiguration(String host, int port, ResourceConfig resourceConfig, String contextRoot) {
+        this(new ServerConnectorConfiguration(host, port), resourceConfig, contextRoot);
     }
 
     public JerseyModuleConfiguration(ServerConnectorConfiguration serverConnectorConfiguration,
-                                     Class<? extends ResourceConfig> resourceConfigClass,
+                                     ResourceConfig resourceConfig,
                                      String contextRoot) {
-        this(Collections.singletonList(serverConnectorConfiguration), resourceConfigClass, contextRoot);
+        this(Collections.singletonList(serverConnectorConfiguration), resourceConfig, contextRoot);
     }
 
     public JerseyModuleConfiguration(List<ServerConnectorConfiguration> serverConnectors,
-                                     Class<? extends ResourceConfig> resourceConfigClass,
+                                     ResourceConfig resourceConfig,
                                      String contextRoot) {
         this.serverConnectors = Objects.requireNonNull(serverConnectors);
-        this.resourceConfigClass = Objects.requireNonNull(resourceConfigClass);
+        this.resourceConfig = Objects.requireNonNull(resourceConfig);
         this.contextRoot = Objects.requireNonNull(contextRoot);
 
         if (serverConnectors.size() == 0) {
@@ -45,8 +45,8 @@ public class JerseyModuleConfiguration {
         return serverConnectors;
     }
 
-    public Class<? extends ResourceConfig> getResourceConfigClass() {
-        return resourceConfigClass;
+    public ResourceConfig getResourceConfig() {
+        return resourceConfig;
     }
 
     public String getContextRoot() {

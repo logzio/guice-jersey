@@ -10,6 +10,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,8 +64,8 @@ public class JerseyServer {
 
         webAppContext.addFilter(GuiceFilter.class, "/*", EnumSet.allOf(DispatcherType.class));
 
-        ServletHolder holder = new ServletHolder(new JerseyServletContainer(injectorSupplier));
-        holder.setInitParameter("javax.ws.rs.Application", jerseyModuleConfiguration.getResourceConfigClass().getName());
+        ResourceConfig resourceConfig = jerseyModuleConfiguration.getResourceConfig();
+        ServletHolder holder = new ServletHolder(new JerseyServletContainer(resourceConfig, injectorSupplier));
 
         webAppContext.addServlet(holder, "/*");
         webAppContext.setResourceBase("/");
