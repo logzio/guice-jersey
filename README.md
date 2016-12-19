@@ -27,7 +27,8 @@ compile 'io.logz:guice-jersey:1.0-SNAPSHOT'
 ```java
 public class Main {
     public static void main(String[] args) throws Exception {
-        JerseyModuleConfiguration jerseyModuleConfiguration = new JerseyModuleConfiguration(8080, Configurations.class, "/resources");
+        ResourceConfig resourceConfig = new ResourceConfig().registerClasses(TestResource.class);
+        JerseyModuleConfiguration jerseyModuleConfiguration = new JerseyModuleConfiguration(8080, resourceConfig, "/resources");
         AtomicReference<Injector> injectorRef = new AtomicReference<>();
         
         List<Module> modules = new ArrayList<>();        
