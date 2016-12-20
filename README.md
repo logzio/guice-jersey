@@ -32,10 +32,11 @@ public class Main {
             .addPort(8080)
             .build();
         
-        AtomicReference<Injector> injectorRef = new AtomicReference<>();
+        // Using this class as an injector supplier because the injector does not exist at initialization
+        AtomicReference<Injector> injectorSupplier = new AtomicReference<>();
         
         List<Module> modules = new ArrayList<>();        
-        modules.add(new JerseyModule(configuration, injectorRef::get));
+        modules.add(new JerseyModule(configuration, injectorSupplier::get));
         modules.add(new AbstractModule() {
           @Override
           protected void configure() {
@@ -44,7 +45,7 @@ public class Main {
         });
         
         Injector injector = Guice.createInjector(modules);
-        injectorRef.set(injector);
+        injectorSupplier.set(injector);
         
         injector.getInstance(JerseyServer.class).start();
     }
