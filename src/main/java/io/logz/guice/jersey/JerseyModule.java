@@ -3,7 +3,7 @@ package io.logz.guice.jersey;
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.google.inject.servlet.ServletModule;
-import io.logz.guice.jersey.configuration.JerseyModuleConfiguration;
+import io.logz.guice.jersey.configuration.JerseyConfiguration;
 
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -13,17 +13,17 @@ import java.util.function.Supplier;
  */
 public class JerseyModule extends AbstractModule {
 
-    private final JerseyModuleConfiguration jerseyModuleConfiguration;
+    private final JerseyConfiguration jerseyConfiguration;
     private final Supplier<Injector> injectorSupplier;
 
-    public JerseyModule(JerseyModuleConfiguration jerseyModuleConfiguration, Supplier<Injector> injectorSupplier) {
-        this.jerseyModuleConfiguration = Objects.requireNonNull(jerseyModuleConfiguration);
+    public JerseyModule(JerseyConfiguration jerseyConfiguration, Supplier<Injector> injectorSupplier) {
+        this.jerseyConfiguration = Objects.requireNonNull(jerseyConfiguration);
         this.injectorSupplier = Objects.requireNonNull(injectorSupplier);
     }
 
     protected void configure() {
         install(new ServletModule());
-        bind(JerseyServer.class).toInstance(new JerseyServer(jerseyModuleConfiguration, injectorSupplier));
+        bind(JerseyServer.class).toInstance(new JerseyServer(jerseyConfiguration, injectorSupplier));
     }
 
 }

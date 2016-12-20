@@ -5,7 +5,7 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import io.logz.guice.jersey.JerseyModule;
 import io.logz.guice.jersey.JerseyServer;
-import io.logz.guice.jersey.configuration.JerseyModuleConfiguration;
+import io.logz.guice.jersey.configuration.JerseyConfiguration;
 import org.apache.mina.util.AvailablePortFinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
@@ -34,7 +34,7 @@ public class JerseyServerSupplier {
             LOGGER.info("Started server on port: {}", port);
 
             Client client = ClientBuilder.newClient();
-            WebTarget target = client.target("http://localhost:" + port).path("resources");
+            WebTarget target = client.target("http://localhost:" + port);
             tester.accept(target);
         } finally {
             server.stop();
@@ -42,11 +42,15 @@ public class JerseyServerSupplier {
     }
 
     private static JerseyServer createServer(int port, ResourceConfig resourceConfig) {
-        JerseyModuleConfiguration jerseyModuleConfiguration = new JerseyModuleConfiguration(port, resourceConfig, "/resources");
+        JerseyConfiguration configuration = JerseyConfiguration.builder()
+                .withResourceConfig(resourceConfig)
+                .addPort(port)
+                .build();
+
         AtomicReference<Injector> injectorRef = new AtomicReference<>();
 
         List<Module> modules = new ArrayList<>();
-        modules.add(new JerseyModule(jerseyModuleConfiguration, injectorRef::get));
+        modules.add(new JerseyModule(configuration, injectorRef::get));
 
         Injector injector = Guice.createInjector(modules);
         injectorRef.set(injector);

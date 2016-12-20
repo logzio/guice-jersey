@@ -27,12 +27,15 @@ compile 'io.logz:guice-jersey:1.0-SNAPSHOT'
 ```java
 public class Main {
     public static void main(String[] args) throws Exception {
-        ResourceConfig resourceConfig = new ResourceConfig().registerClasses(TestResource.class);
-        JerseyModuleConfiguration jerseyModuleConfiguration = new JerseyModuleConfiguration(8080, resourceConfig, "/resources");
+        JerseyConfiguration configuration = JerseyConfiguration.builder()
+            .addPackage("com.example.resources")
+            .addPort(8080)
+            .build();
+        
         AtomicReference<Injector> injectorRef = new AtomicReference<>();
         
         List<Module> modules = new ArrayList<>();        
-        modules.add(new JerseyModule(jerseyModuleConfiguration, injectorRef::get));
+        modules.add(new JerseyModule(configuration, injectorRef::get));
         modules.add(new AbstractModule() {
           @Override
           protected void configure() {

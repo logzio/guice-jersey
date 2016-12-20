@@ -3,7 +3,7 @@ package io.logz.guice.jersey;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceFilter;
 import com.google.inject.servlet.GuiceServletContextListener;
-import io.logz.guice.jersey.configuration.JerseyModuleConfiguration;
+import io.logz.guice.jersey.configuration.JerseyConfiguration;
 import io.logz.guice.jersey.configuration.ServerConnectorConfiguration;
 import io.logz.guice.jersey.servlet.JerseyServletContainer;
 import org.eclipse.jetty.server.Server;
@@ -26,13 +26,13 @@ public class JerseyServer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JerseyServer.class);
 
-    private final JerseyModuleConfiguration jerseyModuleConfiguration;
+    private final JerseyConfiguration jerseyConfiguration;
     private final Supplier<Injector> injectorSupplier;
     private final Server server;
 
-    JerseyServer(JerseyModuleConfiguration jerseyModuleConfiguration,
+    JerseyServer(JerseyConfiguration jerseyConfiguration,
                  Supplier<Injector> injectorSupplier) {
-        this.jerseyModuleConfiguration = jerseyModuleConfiguration;
+        this.jerseyConfiguration = jerseyConfiguration;
         this.injectorSupplier = injectorSupplier;
         this.server = new Server();
 
@@ -50,7 +50,7 @@ public class JerseyServer {
     }
 
     private void configureServer() {
-        List<ServerConnectorConfiguration> serverConnectorConfigurations = jerseyModuleConfiguration.getServerConnectors();
+        List<ServerConnectorConfiguration> serverConnectorConfigurations = jerseyConfiguration.getServerConnectors();
         serverConnectorConfigurations.forEach(configuration -> {
             ServerConnector connector = new ServerConnector(server);
             connector.setName(configuration.getName());
@@ -64,12 +64,12 @@ public class JerseyServer {
 
         webAppContext.addFilter(GuiceFilter.class, "/*", EnumSet.allOf(DispatcherType.class));
 
-        ResourceConfig resourceConfig = jerseyModuleConfiguration.getResourceConfig();
+        ResourceConfig resourceConfig = jerseyConfiguration.getResourceConfig();
         ServletHolder holder = new ServletHolder(new JerseyServletContainer(resourceConfig, injectorSupplier));
 
         webAppContext.addServlet(holder, "/*");
         webAppContext.setResourceBase("/");
-        webAppContext.setContextPath(jerseyModuleConfiguration.getContextRoot());
+        webAppContext.setContextPath(jerseyConfiguration.getContextRoot());
         webAppContext.addEventListener(new GuiceServletContextListener() {
             @Override
             protected Injector getInjector() {
