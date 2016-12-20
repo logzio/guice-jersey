@@ -17,7 +17,7 @@ public class JerseyServerTest {
     public void testBasicConfiguration() throws Exception {
         ResourceConfig resourceConfig = new ResourceConfig().registerClasses(TestResource.class);
         JerseyServerSupplier.createServerAndTest(resourceConfig, target -> {
-            String response = target.path("test").request().get().readEntity(String.class);
+            String response = target.path(TestResource.PATH).request().get().readEntity(String.class);
             assertEquals(TestResource.MESSAGE, response);
         });
     }
@@ -26,10 +26,10 @@ public class JerseyServerTest {
     public void testPackageScanningConfiguration() throws Exception {
         ResourceConfig resourceConfig = new ResourceConfig().packages(getClass().getPackage().toString());
         JerseyServerSupplier.createServerAndTest(resourceConfig, target -> {
-            String testResourceResponse = target.path("test").request().get().readEntity(String.class);
+            String testResourceResponse = target.path(TestResource.PATH).request().get().readEntity(String.class);
             assertEquals(TestResource.MESSAGE, testResourceResponse);
 
-            String pingResourceResponse = target.path("ping").request().get().readEntity(String.class);
+            String pingResourceResponse = target.path(PingResource.PATH).request().get().readEntity(String.class);
             assertEquals(PingResource.MESSAGE, pingResourceResponse);
         });
     }
