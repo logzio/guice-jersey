@@ -2,6 +2,7 @@ package io.logz.guice.jersey;
 
 import io.logz.guice.jersey.beans.TestBean;
 import io.logz.guice.jersey.resources.PojoResource;
+import io.logz.guice.jersey.supplier.JerseyServerSupplier;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.Test;
 

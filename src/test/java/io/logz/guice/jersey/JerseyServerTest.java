@@ -2,6 +2,7 @@ package io.logz.guice.jersey;
 
 import io.logz.guice.jersey.resources.PingResource;
 import io.logz.guice.jersey.resources.TestResource;
+import io.logz.guice.jersey.supplier.JerseyServerSupplier;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.Test;
 
