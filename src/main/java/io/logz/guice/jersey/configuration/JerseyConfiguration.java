@@ -23,7 +23,7 @@ public class JerseyConfiguration {
                         String contextRoot) {
         this.serverConnectors = Objects.requireNonNull(serverConnectors);
         this.resourceConfig = Objects.requireNonNull(resourceConfig);
-        this.contextRoot = Objects.requireNonNull(contextRoot);
+        this.contextRoot = appendLeadingSlashIfMissing(contextRoot);
 
         if (serverConnectors.size() == 0) {
             throw new RuntimeException("Must supply at least one server connector");
@@ -39,6 +39,15 @@ public class JerseyConfiguration {
     }
 
     public String getContextRoot() {
+        return contextRoot;
+    }
+
+    private String appendLeadingSlashIfMissing(String contextRoot) {
+        contextRoot = Objects.requireNonNull(contextRoot);
+        if (!contextRoot.startsWith("/")) {
+            contextRoot = "/" + contextRoot;
+        }
+
         return contextRoot;
     }
 
