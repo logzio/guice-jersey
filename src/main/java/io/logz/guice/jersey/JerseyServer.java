@@ -69,7 +69,7 @@ public class JerseyServer {
 
         webAppContext.addServlet(holder, "/*");
         webAppContext.setResourceBase("/");
-        webAppContext.setContextPath(jerseyConfiguration.getContextRoot());
+        webAppContext.setContextPath(jerseyConfiguration.getContextPath());
         webAppContext.addEventListener(new GuiceServletContextListener() {
             @Override
             protected Injector getInjector() {

@@ -45,7 +45,7 @@ public class JerseyServerSupplier {
             LOGGER.info("Started server on port: {}", port);
 
             Client client = ClientBuilder.newClient();
-            WebTarget target = client.target("http://localhost:" + port).path(configuration.getContextRoot());
+            WebTarget target = client.target("http://localhost:" + port).path(configuration.getContextPath());
             tester.accept(target);
         } finally {
             server.stop();
