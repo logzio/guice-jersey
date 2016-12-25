@@ -1,7 +1,6 @@
 package io.logz.guice.jersey.supplier;
 
 import com.google.inject.Guice;
-import com.google.inject.Injector;
 import com.google.inject.Module;
 import io.logz.guice.jersey.JerseyModule;
 import io.logz.guice.jersey.JerseyServer;
@@ -17,7 +16,6 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 /**
@@ -53,15 +51,11 @@ public class JerseyServerSupplier {
     }
 
     private static JerseyServer createServer(JerseyConfiguration configuration) {
-        AtomicReference<Injector> injectorRef = new AtomicReference<>();
-
         List<Module> modules = new ArrayList<>();
-        modules.add(new JerseyModule(configuration, injectorRef::get));
+        modules.add(new JerseyModule(configuration));
 
-        Injector injector = Guice.createInjector(modules);
-        injectorRef.set(injector);
-
-        return injector.getInstance(JerseyServer.class);
+        return Guice.createInjector(modules)
+                .getInstance(JerseyServer.class);
     }
 
 }
