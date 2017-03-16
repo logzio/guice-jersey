@@ -2,7 +2,9 @@ package io.logz.guice.jersey.configuration;
 
 import org.glassfish.jersey.server.ResourceConfig;
 
+import javax.servlet.Servlet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -11,6 +13,7 @@ import java.util.Objects;
 public class JerseyConfiguration {
 
     private final List<ServerConnectorConfiguration> serverConnectors;
+    private final Map<String, Class<? extends Servlet>> servlets;
     private final ResourceConfig resourceConfig;
     private final String contextPath;
 
@@ -19,11 +22,13 @@ public class JerseyConfiguration {
     }
 
     JerseyConfiguration(List<ServerConnectorConfiguration> serverConnectors,
+                        Map<String, Class<? extends Servlet>> servlets,
                         ResourceConfig resourceConfig,
                         String contextPath) {
         this.serverConnectors = Objects.requireNonNull(serverConnectors);
         this.resourceConfig = Objects.requireNonNull(resourceConfig);
         this.contextPath = appendLeadingSlashIfMissing(contextPath);
+        this.servlets = Objects.requireNonNull(servlets);
 
         if (serverConnectors.size() == 0) {
             throw new RuntimeException("Must supply at least one server connector");
@@ -32,6 +37,10 @@ public class JerseyConfiguration {
 
     public List<ServerConnectorConfiguration> getServerConnectors() {
         return serverConnectors;
+    }
+
+    public Map<String, Class<? extends Servlet>> getServlets() {
+        return servlets;
     }
 
     public ResourceConfig getResourceConfig() {
@@ -50,5 +59,4 @@ public class JerseyConfiguration {
 
         return contextRoot;
     }
-
 }

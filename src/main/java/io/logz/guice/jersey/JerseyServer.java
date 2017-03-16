@@ -68,6 +68,8 @@ public class JerseyServer {
         ServletHolder holder = new ServletHolder(new JerseyServletContainer(resourceConfig, injectorSupplier));
 
         webAppContext.addServlet(holder, "/*");
+        jerseyConfiguration.getServlets().forEach((pathSpec, servlet) ->
+                webAppContext.addServlet(servlet, pathSpec));
         webAppContext.setResourceBase("/");
         webAppContext.setContextPath(jerseyConfiguration.getContextPath());
         webAppContext.addEventListener(new GuiceServletContextListener() {
