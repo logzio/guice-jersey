@@ -1,5 +1,6 @@
 package io.logz.guice.jersey;
 
+import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceFilter;
 import com.google.inject.servlet.GuiceServletContextListener;
@@ -78,6 +79,15 @@ public class JerseyServer {
         });
 
         server.setHandler(webAppContext);
+    }
+
+    public static void main(String[] args) throws Exception {
+        Injector injector = Guice.createInjector();
+        JerseyConfiguration jerseyConfiguration = JerseyConfiguration.builder().addHost("localhost", 9999)
+                .addPackage("io.logz.guice.jersey.resource")
+                .build();
+        JerseyServer jerseyServer = new JerseyServer(jerseyConfiguration, () -> injector);
+        jerseyServer.start();
     }
 
 }
