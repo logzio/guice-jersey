@@ -1,5 +1,6 @@
 package io.logz.guice.jersey;
 
+import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceFilter;
 import com.google.inject.servlet.GuiceServletContextListener;
@@ -11,6 +12,7 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.jolokia.http.AgentServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,6 +70,8 @@ public class JerseyServer {
         ServletHolder holder = new ServletHolder(new JerseyServletContainer(resourceConfig, injectorSupplier));
 
         webAppContext.addServlet(holder, "/*");
+        jerseyConfiguration.getServlets().forEach((pathSpec, servlet) ->
+                webAppContext.addServlet(servlet, pathSpec));
         webAppContext.setResourceBase("/");
         webAppContext.setContextPath(jerseyConfiguration.getContextPath());
         webAppContext.addEventListener(new GuiceServletContextListener() {
@@ -78,6 +82,16 @@ public class JerseyServer {
         });
 
         server.setHandler(webAppContext);
+    }
+
+    //TODO:nir: !!! this is not part of the pull request. Only a demonstration of the concept. !!!
+    public static void main(String[] args) throws Exception {
+        Injector injector = Guice.createInjector();
+        JerseyConfiguration jerseyConfiguration = JerseyConfiguration.builder().addHost("localhost", 9999)
+                .withServlet(org.jolokia.http.AgentServlet.class, "/jolokia/*")
+                .build();
+        JerseyServer jerseyServer = new JerseyServer(jerseyConfiguration, () -> injector);
+        jerseyServer.start();
     }
 
 }

@@ -2,6 +2,7 @@ package io.logz.guice.jersey.configuration;
 
 import org.glassfish.jersey.server.ResourceConfig;
 
+import javax.servlet.Servlet;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,12 +19,14 @@ public class JerseyConfigurationBuilder {
     private Map<String, Boolean> packages;
     private ResourceConfig resourceConfig;
     private Set<ServerConnectorConfiguration> connectors;
+    private Map<String, Class<? extends Servlet>> servlets;
 
     JerseyConfigurationBuilder() {
         contextPath = "";
         connectors = new HashSet<>();
         packages = new HashMap<>();
         classes = new HashSet<>();
+        servlets = new HashMap<>();
     }
 
     public JerseyConfigurationBuilder withContextPath(String contextPath) {
@@ -33,6 +36,11 @@ public class JerseyConfigurationBuilder {
 
     public JerseyConfigurationBuilder withResourceConfig(ResourceConfig resourceConfig) {
         this.resourceConfig = resourceConfig;
+        return this;
+    }
+
+    public JerseyConfigurationBuilder withServlet(Class<? extends Servlet> servletClass, String pathSpec) {
+        this.servlets.put(pathSpec, servletClass);
         return this;
     }
 
@@ -72,7 +80,7 @@ public class JerseyConfigurationBuilder {
         resourceConfig.registerClasses(classes);
         packages.forEach((packageToScan, recursive) -> resourceConfig.packages(recursive, packageToScan));
 
-        return new JerseyConfiguration(new ArrayList<>(connectors), resourceConfig, contextPath);
+        return new JerseyConfiguration(new ArrayList<>(connectors), servlets, resourceConfig, contextPath);
     }
 
 }
