@@ -6,7 +6,7 @@
 
     <groupId>io.logz</groupId>
     <artifactId>guice-jersey</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
 
     <build>
         <plugins>
