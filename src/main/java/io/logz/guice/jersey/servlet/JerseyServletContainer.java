@@ -11,9 +11,6 @@ import javax.servlet.ServletException;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-/**
- * Created by Asaf Alima on 19/12/2016.
- */
 public class JerseyServletContainer extends ServletContainer {
 
     private final Supplier<Injector> injectorSupplier;

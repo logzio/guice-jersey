@@ -20,9 +20,6 @@ import java.util.concurrent.Callable;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-/**
- * Created by Asaf Alima on 19/12/2016.
- */
 public class JerseyServerTest {
 
     @Test

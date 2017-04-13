@@ -18,9 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-/**
- * Created by Asaf Alima on 19/12/2016.
- */
 public class JerseyServerSupplier {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JerseyServerSupplier.class);

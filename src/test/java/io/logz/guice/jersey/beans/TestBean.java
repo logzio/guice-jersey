@@ -2,9 +2,6 @@ package io.logz.guice.jersey.beans;
 
 import java.util.Date;
 
-/**
- * Created by Asaf Alima on 20/12/2016.
- */
 public class TestBean {
 
     private int id;

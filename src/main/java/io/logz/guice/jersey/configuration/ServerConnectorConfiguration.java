@@ -2,9 +2,6 @@ package io.logz.guice.jersey.configuration;
 
 import java.util.Objects;
 
-/**
- * Created by Asaf Alima on 19/12/2016.
- */
 public class ServerConnectorConfiguration {
 
     private static final String ALL_INTERFACES_HOST = "0.0.0.0";

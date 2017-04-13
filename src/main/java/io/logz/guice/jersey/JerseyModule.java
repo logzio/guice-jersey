@@ -8,9 +8,6 @@ import io.logz.guice.jersey.configuration.JerseyConfiguration;
 
 import java.util.Objects;
 
-/**
- * Created by Asaf Alima on 19/12/2016.
- */
 public class JerseyModule extends AbstractModule {
 
     private final JerseyConfiguration jerseyConfiguration;

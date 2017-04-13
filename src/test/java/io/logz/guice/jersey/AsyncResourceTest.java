@@ -7,9 +7,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * Created by Asaf Alima on 20/12/2016.
- */
 public class AsyncResourceTest {
 
     @Test

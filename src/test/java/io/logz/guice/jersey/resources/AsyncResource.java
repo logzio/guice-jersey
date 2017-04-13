@@ -7,9 +7,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 
-/**
- * Created by Asaf Alima on 20/12/2016.
- */
 @Path(AsyncResource.PATH)
 public class AsyncResource {
 

@@ -13,9 +13,6 @@ import java.util.Date;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-/**
- * Created by Asaf Alima on 20/12/2016.
- */
 public class JacksonFeatureTest {
 
     @Test

@@ -5,9 +5,6 @@ import org.glassfish.jersey.server.ResourceConfig;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Created by Asaf Alima on 19/12/2016.
- */
 public class JerseyConfiguration {
 
     private final List<ServerConnectorConfiguration> serverConnectors;

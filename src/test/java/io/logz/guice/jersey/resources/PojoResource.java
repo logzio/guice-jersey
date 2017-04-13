@@ -12,9 +12,6 @@ import javax.ws.rs.core.Response;
 import java.util.Date;
 import java.util.Random;
 
-/**
- * Created by Asaf Alima on 20/12/2016.
- */
 @Path(PojoResource.PATH)
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)

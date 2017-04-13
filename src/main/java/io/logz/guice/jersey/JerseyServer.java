@@ -19,9 +19,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Supplier;
 
-/**
- * Created by Asaf Alima on 19/12/2016.
- */
 public class JerseyServer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JerseyServer.class);

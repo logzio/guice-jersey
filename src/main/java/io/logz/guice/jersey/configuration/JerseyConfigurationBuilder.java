@@ -8,9 +8,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Created by Asaf Alima on 20/12/2016.
- */
 public class JerseyConfigurationBuilder {
 
     private String contextPath;
