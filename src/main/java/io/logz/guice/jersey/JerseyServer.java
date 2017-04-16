@@ -5,12 +5,11 @@ import com.google.inject.servlet.GuiceFilter;
 import com.google.inject.servlet.GuiceServletContextListener;
 import io.logz.guice.jersey.configuration.JerseyConfiguration;
 import io.logz.guice.jersey.configuration.ServerConnectorConfiguration;
-import io.logz.guice.jersey.servlet.JerseyServletContainer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
-import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.servlet.ServletContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,8 +60,8 @@ public class JerseyServer {
 
         webAppContext.addFilter(GuiceFilter.class, "/*", EnumSet.allOf(DispatcherType.class));
 
-        ResourceConfig resourceConfig = jerseyConfiguration.getResourceConfig();
-        ServletHolder holder = new ServletHolder(new JerseyServletContainer(resourceConfig, injectorSupplier));
+        ServletHolder holder = new ServletHolder(ServletContainer.class);
+        holder.setInitParameter("javax.ws.rs.Application", GuiceJerseyResourceConfig.class.getName());
 
         webAppContext.addServlet(holder, "/*");
         webAppContext.setResourceBase("/");

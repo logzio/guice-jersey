@@ -21,6 +21,7 @@ public class JerseyModule extends AbstractModule {
 
         install(new ServletModule());
         bind(JerseyServer.class).toInstance(new JerseyServer(jerseyConfiguration, injectorProvider::get));
+        bind(JerseyConfiguration.class).toInstance(jerseyConfiguration);
     }
 
 }
