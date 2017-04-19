@@ -18,7 +18,7 @@ public class FiltersWithGuiceIntegrationTest {
     public void testFilterWorksWithGuice() throws Exception {
         JerseyConfigurationBuilder configurationBuilder = JerseyConfiguration.builder()
                 .addResourceClass(TestResource.class)
-                .addResourceClass(TestFilter.class);
+                .registerClasses(TestFilter.class);
 
         JerseyServerSupplier.createServerAndTest(configurationBuilder, target -> {
             Response response = target.path(TestResource.PATH).request().get();
