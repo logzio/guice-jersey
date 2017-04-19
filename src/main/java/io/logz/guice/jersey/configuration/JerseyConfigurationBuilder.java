@@ -62,6 +62,11 @@ public class JerseyConfigurationBuilder {
         return this;
     }
 
+    public JerseyConfigurationBuilder registerClasses(Class<?> clazz) {
+        classes.add(clazz);
+        return this;
+    }
+
     public JerseyConfiguration build() {
         if (resourceConfig == null) resourceConfig = new ResourceConfig();
         if (contextPath == null) contextPath = "/";
