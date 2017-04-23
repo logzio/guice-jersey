@@ -18,6 +18,7 @@ public class GuiceJerseyResourceConfig extends ResourceConfig {
 
         // We access the injector that was attached to the context by GuiceServletContextListener
         Injector injector = (Injector) servletContext.getAttribute(Injector.class.getName());
+        injector.getInstance(ServiceLocatorProvider.class).setServiceLocator(serviceLocator);
         GuiceBridge.getGuiceBridge().initializeGuiceBridge(serviceLocator);
         GuiceIntoHK2Bridge guiceBridge = serviceLocator.getService(GuiceIntoHK2Bridge.class);
         guiceBridge.bridgeGuiceInjector(injector);

@@ -1,6 +1,7 @@
 package io.logz.guice.jersey.supplier;
 
 import com.google.inject.Guice;
+import com.google.inject.Injector;
 import com.google.inject.Module;
 import io.logz.guice.jersey.JerseyModule;
 import io.logz.guice.jersey.JerseyServer;
@@ -47,12 +48,15 @@ public class JerseyServerSupplier {
         }
     }
 
-    private static JerseyServer createServer(JerseyConfiguration configuration) {
+    public static Injector createInjector(JerseyConfiguration configuration) {
         List<Module> modules = new ArrayList<>();
         modules.add(new JerseyModule(configuration));
 
-        return Guice.createInjector(modules)
-                .getInstance(JerseyServer.class);
+        return Guice.createInjector(modules);
+    }
+
+    private static JerseyServer createServer(JerseyConfiguration configuration) {
+        return createInjector(configuration).getInstance(JerseyServer.class);
     }
 
 }
