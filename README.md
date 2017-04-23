@@ -8,7 +8,7 @@ Easy to use Google Guice module for Jersey.
 ### Gradle
 
 ```goovy
-compile 'io.logz:guice-jersey:1.0.0'
+compile 'io.logz:guice-jersey:1.0.1'
 ```
 
 ### Maven
@@ -17,7 +17,7 @@ compile 'io.logz:guice-jersey:1.0.0'
 <dependency>
   <groupId>io.logz</groupId>
   <artifactId>guice-jersey</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
 </dependency>
 ```
 ## Usage
