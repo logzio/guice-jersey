@@ -3,7 +3,7 @@
 ## Introduction
 Easy to use Google Guice module for Jersey.
 
-##Installation
+## Installation
 
 ### Gradle
 
