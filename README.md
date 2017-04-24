@@ -46,3 +46,8 @@ public class Main {
     }
 }
 ```
+### Contribution
+ - Fork
+ - Code
+ - ```./mvnw test```
+ - Issue a PR :)
