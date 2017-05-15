@@ -1,4 +1,7 @@
 # Jersey Guice Module
+[![Build Status](https://travis-ci.org/logzio/guice-jersey.svg?branch=master)](https://travis-ci.org/logzio/guice-jersey)
+[![Coverage Status](https://coveralls.io/repos/logzio/guice-jersey/badge.svg?branch=master)](https://coveralls.io/r/logzio/guice-jersey?branch=master)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.logz/guice-jersey/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.logz/guice-jersey)
 
 ## Introduction
 Jersey comes with its own dependency injection framework for instantiating its classes. 
@@ -10,7 +13,7 @@ This module aims to do just that by booting Jetty based Jersey server and initia
 ### Gradle
 
 ```groovy
-compile 'io.logz:guice-jersey:1.0.1'
+compile 'io.logz:guice-jersey:1.0.2'
 ```
 
 ### Maven
@@ -19,7 +22,7 @@ compile 'io.logz:guice-jersey:1.0.1'
 <dependency>
   <groupId>io.logz</groupId>
   <artifactId>guice-jersey</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
 </dependency>
 ```
 ## Usage
