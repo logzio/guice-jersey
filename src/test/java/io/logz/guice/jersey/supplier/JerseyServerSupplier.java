@@ -16,20 +16,19 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class JerseyServerSupplier {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JerseyServerSupplier.class);
 
-    public static void createServerAndTest(ResourceConfig resourceConfig, Consumer<WebTarget> tester) throws Exception {
+    public static void createServerAndTest(ResourceConfig resourceConfig, Tester tester) throws Exception {
         JerseyConfigurationBuilder configurationBuilder = JerseyConfiguration.builder()
                 .withResourceConfig(resourceConfig);
 
         createServerAndTest(configurationBuilder, tester);
     }
 
-    public static void createServerAndTest(JerseyConfigurationBuilder configurationBuilder, Consumer<WebTarget> tester) throws Exception {
+    public static void createServerAndTest(JerseyConfigurationBuilder configurationBuilder, Tester tester) throws Exception {
         int port = AvailablePortFinder.getNextAvailable();
         configurationBuilder.addPort(port);
         JerseyConfiguration configuration = configurationBuilder.build();
@@ -41,7 +40,7 @@ public class JerseyServerSupplier {
 
             Client client = ClientBuilder.newClient();
             WebTarget target = client.target("http://localhost:" + port).path(configuration.getContextPath());
-            tester.accept(target);
+            tester.test(target);
         } finally {
             server.stop();
         }
@@ -55,4 +54,9 @@ public class JerseyServerSupplier {
                 .getInstance(JerseyServer.class);
     }
 
+    public interface Tester {
+
+        void test(WebTarget target) throws Exception;
+
+    }
 }
