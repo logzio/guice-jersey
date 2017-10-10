@@ -121,9 +121,9 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <hk2-bridge.version>2.5.0-b36</hk2-bridge.version>
-        <jersey.version>2.26-b03</jersey.version>
-        <jetty.version>9.4.3.v20170317</jetty.version>
+        <hk2-bridge.version>2.5.0-b57</hk2-bridge.version>
+        <jersey.version>2.26</jersey.version>
+        <jetty.version>9.4.7.v20170914</jetty.version>
         <guice.version>4.1.0</guice.version>
         <slf4j.version>1.7.25</slf4j.version>
     </properties>
@@ -138,6 +138,11 @@
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>
             <artifactId>jersey-container-servlet</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.inject</groupId>
+            <artifactId>jersey-hk2</artifactId>
             <version>${jersey.version}</version>
         </dependency>
         <dependency>
@@ -218,7 +223,6 @@
             <version>1.1.7</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
     <developers>
