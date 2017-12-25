@@ -49,7 +49,10 @@ public class WebsocketServerSupplier {
             Object instance = injector.getInstance(endpointClass);
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(instance, uri);
 
+            // wait some time to make sure everything's ready.
+            Thread.sleep(20);
             tester.test(session);
+            Thread.sleep(20);
             session.close();
         } finally {
             server.stop();
