@@ -56,6 +56,40 @@ public class Main {
 }
 ```
 
+### With WebSockets
+
+Very similar to the example above. Be aware that you **need** to set a context path for the REST resources, otherwise jetty will throw you some errors when connecting with websockets. Be sure that a REST resource does not have the same path as a websocket resource. This is currently the only known limitation. The advantage is that a single jetty server runs with REST and WebSockets enabled on the same port.
+
+1. Add `JerseyModule` to your Guice Injector
+2. Configure packages to scan for resources and a port to expose
+3. Get instance of `JerseyServer` and start consuming your Restful and WebSocket resources
+
+```java
+public class Main {
+    public static void main(String[] args) throws Exception {
+        JerseyConfiguration configuration = JerseyConfiguration.builder()
+            .addPackage("com.example.resources")
+            .withContextPath("resources") // enter a value here, just not "/"
+            .addPort(8080)
+            .build();
+        WebsocketConfiguration wsConfig = new WebsocketConfiguration()
+            .withEndpointClasses(...) // add your classes that have the javax.websocket annotations.
+        
+        List<Module> modules = new ArrayList<>();        
+        modules.add(new JerseyModule(configuration, wsConfig));
+        modules.add(new AbstractModule() {
+          @Override
+          protected void configure() {
+            // Your module bindings ...
+          }
+        });
+        
+        Guice.createInjector(modules)
+          .getInstance(JerseyServer.class).start();
+    }
+}
+```
+
 ## Motivation
 
 ### Why Jersey?
