@@ -1,21 +1,21 @@
 package io.logz.guice.jersey;
 
 import com.google.inject.Injector;
-import com.google.inject.servlet.GuiceFilter;
-import com.google.inject.servlet.GuiceServletContextListener;
 import io.logz.guice.jersey.configuration.JerseyConfiguration;
 import io.logz.guice.jersey.configuration.ServerConnectorConfiguration;
+import io.logz.guice.jersey.configuration.WebsocketConfiguration;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.servlet.ServletHolder;
-import org.eclipse.jetty.webapp.WebAppContext;
-import org.glassfish.jersey.servlet.ServletContainer;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.websocket.api.InvalidWebSocketException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.DispatcherType;
-import java.util.EnumSet;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 public class JerseyServer {
@@ -23,12 +23,15 @@ public class JerseyServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(JerseyServer.class);
 
     private final JerseyConfiguration jerseyConfiguration;
+    private final WebsocketConfiguration websocketConfiguration;
     private final Supplier<Injector> injectorSupplier;
     private final Server server;
 
     JerseyServer(JerseyConfiguration jerseyConfiguration,
+                 WebsocketConfiguration websocketConfiguration,
                  Supplier<Injector> injectorSupplier) {
         this.jerseyConfiguration = jerseyConfiguration;
+        this.websocketConfiguration = websocketConfiguration;
         this.injectorSupplier = injectorSupplier;
         this.server = new Server();
 
@@ -55,25 +58,28 @@ public class JerseyServer {
             server.addConnector(connector);
         });
 
-        WebAppContext webAppContext = new WebAppContext();
-        webAppContext.setServer(server);
+        if (websocketConfiguration != null && "/".equals(jerseyConfiguration.getContextPath())) {
+            throw new InvalidWebSocketException(
+                    "The websocket context path cannot be the same as jersey context path. " +
+                            "Either set a context path for the rest API or disable the websocket feature. " +
+                            "Also make sure that a REST resource does not have the same path as a websocket path.");
+        }
 
-        webAppContext.addFilter(GuiceFilter.class, "/*", EnumSet.allOf(DispatcherType.class));
+        Optional<ContextHandler> webAppContext = new RestContextConfigurator(server, injectorSupplier)
+                .configure(jerseyConfiguration);
 
-        ServletHolder holder = new ServletHolder(ServletContainer.class);
-        holder.setInitParameter("javax.ws.rs.Application", GuiceJerseyResourceConfig.class.getName());
+        Optional<ContextHandler> websocketContext = new WebsocketContextConfigurator(server, injectorSupplier)
+                .configure(websocketConfiguration);
 
-        webAppContext.addServlet(holder, "/*");
-        webAppContext.setResourceBase("/");
-        webAppContext.setContextPath(jerseyConfiguration.getContextPath());
-        webAppContext.addEventListener(new GuiceServletContextListener() {
-            @Override
-            protected Injector getInjector() {
-                return injectorSupplier.get();
-            }
-        });
+        ContextHandlerCollection contexts = new ContextHandlerCollection();
 
-        server.setHandler(webAppContext);
+        List<Handler> handlers = new ArrayList<>();
+        webAppContext.ifPresent(handlers::add);
+        websocketContext.ifPresent(handlers::add);
+
+        contexts.setHandlers(handlers.toArray(new Handler[]{}));
+
+        server.setHandler(contexts);
     }
 
 }
