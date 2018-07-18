@@ -4,10 +4,12 @@ import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceFilter;
 import com.google.inject.servlet.GuiceServletContextListener;
 import io.logz.guice.jersey.configuration.JerseyConfiguration;
+import io.logz.guice.jersey.configuration.JettyConfiguration;
 import io.logz.guice.jersey.configuration.ServerConnectorConfiguration;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.slf4j.Logger;
@@ -16,6 +18,8 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.DispatcherType;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.function.Supplier;
 
 public class JerseyServer {
@@ -31,6 +35,25 @@ public class JerseyServer {
         this.jerseyConfiguration = jerseyConfiguration;
         this.injectorSupplier = injectorSupplier;
         this.server = new Server();
+
+        configureServer();
+    }
+
+    JerseyServer(JerseyConfiguration jerseyConfiguration,
+                 JettyConfiguration jettyConfiguration,
+                 Supplier<Injector> injectorSupplier) {
+        this.jerseyConfiguration = jerseyConfiguration;
+        this.injectorSupplier = injectorSupplier;
+        validate(jettyConfiguration);
+
+        BlockingQueue< Runnable > queue = new ArrayBlockingQueue<>(jettyConfiguration.getMaxQueueSize());
+        QueuedThreadPool threadPool = new QueuedThreadPool(jettyConfiguration.getMaxThreads(),
+                                                           jettyConfiguration.getMinThreads(),
+                                                           jettyConfiguration.getIdleTimeout(),
+                                                           queue);
+        LOGGER.info("Creating embedded jetty server with bounded requests queue. Config {}", jettyConfiguration);
+
+        this.server = new Server(threadPool);
 
         configureServer();
     }
@@ -74,6 +97,28 @@ public class JerseyServer {
         });
 
         server.setHandler(webAppContext);
+    }
+
+    private void validate(JettyConfiguration jettyConfiguration) {
+        if (jettyConfiguration.getMinThreads() < 1) {
+            throw new ConfigurationException(String.format("minThreads (%s) must be bigger than 0", jettyConfiguration.getMinThreads()));
+        }
+        if (jettyConfiguration.getMaxThreads() < jettyConfiguration.getMinThreads()) {
+            throw new ConfigurationException(String.format("maxThreads (%s) must be bigger than minThreads (%s)", jettyConfiguration.getMaxThreads(), jettyConfiguration.getMinThreads()));
+        }
+        if (jettyConfiguration.getIdleTimeout() < 0) {
+            throw new ConfigurationException(String.format("idleTimeout (%s) must be 0 or bigger", jettyConfiguration.getIdleTimeout()));
+        }
+        if (jettyConfiguration.getMaxQueueSize() > jettyConfiguration.getMaxThreads()) {
+            LOGGER.warn("maxQueueSize ({}) is bigger than the maxThreads ({}) - this may lead to server hanging onto queued requests (potentially long after the client has timed out)",
+                    jettyConfiguration.getMaxQueueSize(), jettyConfiguration.getMaxThreads());
+        }
+    }
+
+    private class ConfigurationException extends RuntimeException {
+        private ConfigurationException(String s) {
+            super(s);
+        }
     }
 
 }
