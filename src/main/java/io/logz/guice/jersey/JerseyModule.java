@@ -5,22 +5,22 @@ import com.google.inject.Injector;
 import com.google.inject.Provider;
 import com.google.inject.servlet.ServletModule;
 import io.logz.guice.jersey.configuration.JerseyConfiguration;
-import io.logz.guice.jersey.configuration.JettyConfiguration;
+import org.eclipse.jetty.util.thread.ThreadPool;
 
-import java.util.Objects;
+import static java.util.Objects.requireNonNull;
 
 public class JerseyModule extends AbstractModule {
 
     private final JerseyConfiguration jerseyConfiguration;
-    private JettyConfiguration jettyConfiguration;
+    private ThreadPool jettyThreadPool;
 
     public JerseyModule(JerseyConfiguration jerseyConfiguration) {
-        this.jerseyConfiguration = Objects.requireNonNull(jerseyConfiguration);
+        this(jerseyConfiguration, null);
     }
 
-    public JerseyModule(JerseyConfiguration jerseyConfiguration, JettyConfiguration jettyConfiguration) {
-        this.jerseyConfiguration = Objects.requireNonNull(jerseyConfiguration);
-        this.jettyConfiguration = Objects.requireNonNull(jettyConfiguration);
+    public JerseyModule(JerseyConfiguration jerseyConfiguration, ThreadPool jettyThreadPool) {
+        this.jerseyConfiguration = requireNonNull(jerseyConfiguration);
+        this.jettyThreadPool = jettyThreadPool;
     }
 
     protected void configure() {
@@ -32,11 +32,7 @@ public class JerseyModule extends AbstractModule {
     }
 
     private JerseyServer createNewJerseyServer(Provider<Injector> injectorProvider) {
-        if (jettyConfiguration == null) {
-            return new JerseyServer(jerseyConfiguration, injectorProvider::get);
-        } else {
-            return new JerseyServer(jerseyConfiguration, jettyConfiguration, injectorProvider::get);
-        }
+        return new JerseyServer(jerseyConfiguration, jettyThreadPool, injectorProvider::get);
     }
 
 }
