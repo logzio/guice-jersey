@@ -2,25 +2,37 @@ package io.logz.guice.jersey;
 
 import io.logz.guice.jersey.configuration.JerseyConfiguration;
 import io.logz.guice.jersey.configuration.JerseyConfigurationBuilder;
+import io.logz.guice.jersey.resources.HeavyResource;
 import io.logz.guice.jersey.resources.PingResource;
 import io.logz.guice.jersey.resources.TestResource;
 import io.logz.guice.jersey.resources.recursive.FooResource;
 import io.logz.guice.jersey.supplier.JerseyServerSupplier;
 import org.apache.mina.util.AvailablePortFinder;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import java.net.InetAddress;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class JerseyServerTest {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(JerseyServerTest.class);
 
     @Test
     public void testBasicConfiguration() throws Exception {
@@ -100,6 +112,44 @@ public class JerseyServerTest {
 
     }
 
+    @Test
+    public void testJettyThreadPoolConfiguration() throws Exception {
+
+        ResourceConfig resourceConfig = new ResourceConfig().registerClasses(HeavyResource.class);
+
+        int jettyThreadsNum = 6;
+        int queueSize = 1;
+
+        BlockingQueue< Runnable > queue = new ArrayBlockingQueue<>(queueSize);
+        QueuedThreadPool jettyBoundedThreadPool = new QueuedThreadPool(jettyThreadsNum,
+                jettyThreadsNum,
+                60000,
+                queue);
+
+        JerseyServerSupplier.createServerAndTest(resourceConfig, jettyBoundedThreadPool, target -> {
+
+            int overloadingThreadsNum = 1;
+            int threadsNum = queueSize + jettyThreadsNum + overloadingThreadsNum;
+
+            CountDownLatch countDownLatch = new CountDownLatch(threadsNum);
+            AtomicInteger successCounter = new AtomicInteger(0);
+            AtomicInteger failureCounter = new AtomicInteger(0);
+
+            Stream.generate(() -> new Thread(new ResourceResponseChecker(successCounter,
+                                                                         failureCounter,
+                                                                         countDownLatch,
+                                                                         target)))
+                  .limit(threadsNum).forEach(Thread::start);
+
+            countDownLatch.await();
+
+            LOGGER.info("successCounter={}, failureCounter={}", successCounter.get(), failureCounter.get());
+
+            assertTrue(queueSize + jettyThreadsNum >= successCounter.get());
+            assertTrue(overloadingThreadsNum <= failureCounter.get());
+        });
+    }
+
     private void assertNoAccessFromIp(WebTarget target, String address, int port) {
         String testResourceResponse = target.path(TestResource.PATH).request().get().readEntity(String.class);
         assertEquals(TestResource.MESSAGE, testResourceResponse);
@@ -118,4 +168,37 @@ public class JerseyServerTest {
         }
     }
 
+    private class ResourceResponseChecker implements Runnable {
+        private final AtomicInteger successCounter;
+        private final AtomicInteger failureCounter;
+        private final CountDownLatch countDownLatch;
+        private final WebTarget target;
+
+        ResourceResponseChecker(AtomicInteger successCounter, AtomicInteger failureCounter, CountDownLatch countDownLatch, WebTarget target) {
+            this.successCounter = successCounter;
+            this.failureCounter = failureCounter;
+            this.countDownLatch = countDownLatch;
+            this.target = target;
+        }
+
+        @Override
+        public void run() {
+            try {
+                Response response = target.path(HeavyResource.PATH).request().get();
+                if (response.getStatus() == 200) {
+                    String responseMessage = response.readEntity(String.class);
+                    assertEquals(HeavyResource.MESSAGE, responseMessage);
+                    successCounter.incrementAndGet();
+                } else {
+                    LOGGER.error("response status is {}, response message: {}", response.getStatus(), response.readEntity(String.class));
+                    failureCounter.incrementAndGet();
+                }
+            } catch (Throwable t) {
+                LOGGER.error("failed to get response from server", t);
+                failureCounter.incrementAndGet();
+            } finally {
+                countDownLatch.countDown();
+            }
+        }
+    }
 }

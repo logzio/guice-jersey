@@ -7,6 +7,7 @@ import io.logz.guice.jersey.JerseyServer;
 import io.logz.guice.jersey.configuration.JerseyConfiguration;
 import io.logz.guice.jersey.configuration.JerseyConfigurationBuilder;
 import org.apache.mina.util.AvailablePortFinder;
+import org.eclipse.jetty.util.thread.ThreadPool;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,18 +23,26 @@ public class JerseyServerSupplier {
     private static final Logger LOGGER = LoggerFactory.getLogger(JerseyServerSupplier.class);
 
     public static void createServerAndTest(ResourceConfig resourceConfig, Tester tester) throws Exception {
+        createServerAndTest(resourceConfig, null, tester);
+    }
+
+    public static void createServerAndTest(ResourceConfig resourceConfig, ThreadPool jettyThreadPool, Tester tester) throws Exception {
         JerseyConfigurationBuilder configurationBuilder = JerseyConfiguration.builder()
                 .withResourceConfig(resourceConfig);
 
-        createServerAndTest(configurationBuilder, tester);
+        createServerAndTest(configurationBuilder, jettyThreadPool, tester);
     }
 
     public static void createServerAndTest(JerseyConfigurationBuilder configurationBuilder, Tester tester) throws Exception {
+        createServerAndTest(configurationBuilder, null, tester);
+    }
+
+    private static void createServerAndTest(JerseyConfigurationBuilder configurationBuilder, ThreadPool jettyThreadPool, Tester tester) throws Exception {
         int port = AvailablePortFinder.getNextAvailable();
         configurationBuilder.addPort(port);
         JerseyConfiguration configuration = configurationBuilder.build();
 
-        JerseyServer server = createServer(configuration);
+        JerseyServer server = createServer(configuration, jettyThreadPool);
         try {
             server.start();
             LOGGER.info("Started server on port: {}", port);
@@ -46,9 +55,9 @@ public class JerseyServerSupplier {
         }
     }
 
-    private static JerseyServer createServer(JerseyConfiguration configuration) {
+    private static JerseyServer createServer(JerseyConfiguration configuration, ThreadPool jettyThreadPool) {
         List<Module> modules = new ArrayList<>();
-        modules.add(new JerseyModule(configuration));
+        modules.add(new JerseyModule(configuration, jettyThreadPool));
 
         return Guice.createInjector(modules)
                 .getInstance(JerseyServer.class);
