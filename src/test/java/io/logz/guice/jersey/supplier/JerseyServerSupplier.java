@@ -6,7 +6,7 @@ import io.logz.guice.jersey.JerseyModule;
 import io.logz.guice.jersey.JerseyServer;
 import io.logz.guice.jersey.configuration.JerseyConfiguration;
 import io.logz.guice.jersey.configuration.JerseyConfigurationBuilder;
-import org.apache.mina.util.AvailablePortFinder;
+import me.alexpanov.net.FreePortFinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,7 @@ public class JerseyServerSupplier {
     }
 
     public static void createServerAndTest(JerseyConfigurationBuilder configurationBuilder, Tester tester) throws Exception {
-        int port = AvailablePortFinder.getNextAvailable();
+        int port = FreePortFinder.findFreeLocalPort();
         configurationBuilder.addPort(port);
         JerseyConfiguration configuration = configurationBuilder.build();
 
