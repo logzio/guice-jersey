@@ -6,7 +6,7 @@ import io.logz.guice.jersey.resources.PingResource;
 import io.logz.guice.jersey.resources.TestResource;
 import io.logz.guice.jersey.resources.recursive.FooResource;
 import io.logz.guice.jersey.supplier.JerseyServerSupplier;
-import org.apache.mina.util.AvailablePortFinder;
+import me.alexpanov.net.FreePortFinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.Test;
 
@@ -83,7 +83,7 @@ public class JerseyServerTest {
 
     @Test
     public void testHostConfiguration() throws Exception {
-        int port = AvailablePortFinder.getNextAvailable();
+        int port = FreePortFinder.findFreeLocalPort();
         String address = InetAddress.getLocalHost().getHostAddress();
 
         JerseyConfigurationBuilder namedHostConfigurationBuilder = JerseyConfiguration.builder()
