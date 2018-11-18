@@ -5,6 +5,7 @@ import com.google.inject.servlet.GuiceFilter;
 import com.google.inject.servlet.GuiceServletContextListener;
 import io.logz.guice.jersey.configuration.JerseyConfiguration;
 import io.logz.guice.jersey.configuration.ServerConnectorConfiguration;
+import org.eclipse.jetty.jmx.MBeanContainer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -14,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.DispatcherType;
+import java.lang.management.ManagementFactory;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Supplier;
@@ -46,6 +48,9 @@ public class JerseyServer {
     }
 
     private void configureServer() {
+        MBeanContainer mbeanContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
+        server.addBean(mbeanContainer);
+
         List<ServerConnectorConfiguration> serverConnectorConfigurations = jerseyConfiguration.getServerConnectors();
         serverConnectorConfigurations.forEach(configuration -> {
             ServerConnector connector = new ServerConnector(server);
