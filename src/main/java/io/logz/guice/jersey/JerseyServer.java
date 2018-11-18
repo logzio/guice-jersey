@@ -8,6 +8,8 @@ import io.logz.guice.jersey.configuration.ServerConnectorConfiguration;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.StringUtil;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.slf4j.Logger;
@@ -54,6 +56,10 @@ public class JerseyServer {
             connector.setPort(configuration.getPort());
             server.addConnector(connector);
         });
+
+        if(StringUtil.isNotBlank(jerseyConfiguration.getThreadsNamePrefix())) {
+            ((QueuedThreadPool) this.server.getThreadPool()).setName(jerseyConfiguration.getThreadsNamePrefix());
+        }
 
         WebAppContext webAppContext = new WebAppContext();
         webAppContext.setServer(server);

@@ -10,6 +10,7 @@ public class JerseyConfiguration {
     private final List<ServerConnectorConfiguration> serverConnectors;
     private final ResourceConfig resourceConfig;
     private final String contextPath;
+    private final String threadsNamePrefix;
 
     public static JerseyConfigurationBuilder builder() {
         return new JerseyConfigurationBuilder();
@@ -17,10 +18,12 @@ public class JerseyConfiguration {
 
     JerseyConfiguration(List<ServerConnectorConfiguration> serverConnectors,
                         ResourceConfig resourceConfig,
-                        String contextPath) {
+                        String contextPath,
+                        String threadsNamePrefix) {
         this.serverConnectors = Objects.requireNonNull(serverConnectors);
         this.resourceConfig = Objects.requireNonNull(resourceConfig);
         this.contextPath = appendLeadingSlashIfMissing(contextPath);
+        this.threadsNamePrefix = threadsNamePrefix;
 
         if (serverConnectors.size() == 0) {
             throw new RuntimeException("Must supply at least one server connector");
@@ -39,6 +42,10 @@ public class JerseyConfiguration {
         return contextPath;
     }
 
+    public String getThreadsNamePrefix() {
+        return threadsNamePrefix;
+    }
+
     private String appendLeadingSlashIfMissing(String contextRoot) {
         contextRoot = Objects.requireNonNull(contextRoot);
         if (!contextRoot.startsWith("/")) {
@@ -47,5 +54,4 @@ public class JerseyConfiguration {
 
         return contextRoot;
     }
-
 }

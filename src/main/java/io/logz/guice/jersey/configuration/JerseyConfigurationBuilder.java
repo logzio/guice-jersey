@@ -15,6 +15,7 @@ public class JerseyConfigurationBuilder {
     private Map<String, Boolean> packages;
     private ResourceConfig resourceConfig;
     private Set<ServerConnectorConfiguration> connectors;
+    private String threadsNamePrefix;
 
     JerseyConfigurationBuilder() {
         contextPath = "";
@@ -30,6 +31,11 @@ public class JerseyConfigurationBuilder {
 
     public JerseyConfigurationBuilder withResourceConfig(ResourceConfig resourceConfig) {
         this.resourceConfig = resourceConfig;
+        return this;
+    }
+
+    public JerseyConfigurationBuilder withThreadsNamePrefix(String threadsNamePrefix) {
+        this.threadsNamePrefix = threadsNamePrefix;
         return this;
     }
 
@@ -74,7 +80,7 @@ public class JerseyConfigurationBuilder {
         resourceConfig.registerClasses(classes);
         packages.forEach((packageToScan, recursive) -> resourceConfig.packages(recursive, packageToScan));
 
-        return new JerseyConfiguration(new ArrayList<>(connectors), resourceConfig, contextPath);
+        return new JerseyConfiguration(new ArrayList<>(connectors), resourceConfig, contextPath, threadsNamePrefix);
     }
 
 }
