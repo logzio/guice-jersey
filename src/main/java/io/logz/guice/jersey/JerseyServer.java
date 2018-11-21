@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.DispatcherType;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class JerseyServer {
@@ -28,9 +29,16 @@ public class JerseyServer {
 
     JerseyServer(JerseyConfiguration jerseyConfiguration,
                  Supplier<Injector> injectorSupplier) {
+        this(jerseyConfiguration, injectorSupplier, jettyServer -> {});
+    }
+
+    JerseyServer(JerseyConfiguration jerseyConfiguration,
+                 Supplier<Injector> injectorSupplier,
+                 Consumer<Server> jettyConfigurer) {
         this.jerseyConfiguration = jerseyConfiguration;
         this.injectorSupplier = injectorSupplier;
         this.server = new Server();
+        jettyConfigurer.accept(server);
 
         configureServer();
     }
