@@ -12,7 +12,7 @@ import java.util.Objects;
 public class JerseyModule extends AbstractModule {
 
     private final JerseyConfiguration jerseyConfiguration;
-    private JettyServerCreator jettyServerCreator;
+    private final JettyServerCreator jettyServerCreator;
 
     public JerseyModule(JerseyConfiguration jerseyConfiguration) {
         this(jerseyConfiguration, Server::new);
