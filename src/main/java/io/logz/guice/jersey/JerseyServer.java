@@ -27,10 +27,11 @@ public class JerseyServer {
     private final Server server;
 
     JerseyServer(JerseyConfiguration jerseyConfiguration,
-                 Supplier<Injector> injectorSupplier) {
+                 Supplier<Injector> injectorSupplier,
+                 JettyServerCreator jettyServerCreator) {
         this.jerseyConfiguration = jerseyConfiguration;
         this.injectorSupplier = injectorSupplier;
-        this.server = new Server();
+        this.server = jettyServerCreator.create();
 
         configureServer();
     }
