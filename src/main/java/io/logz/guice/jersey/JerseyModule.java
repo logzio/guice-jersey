@@ -8,27 +8,26 @@ import io.logz.guice.jersey.configuration.JerseyConfiguration;
 import org.eclipse.jetty.server.Server;
 
 import java.util.Objects;
-import java.util.function.Consumer;
 
 public class JerseyModule extends AbstractModule {
 
     private final JerseyConfiguration jerseyConfiguration;
-    private Consumer<Server> jettyConfigurer;
+    private JettyServerCreator jettyServerCreator;
 
     public JerseyModule(JerseyConfiguration jerseyConfiguration) {
-        this(jerseyConfiguration, server -> {});
+        this(jerseyConfiguration, Server::new);
     }
 
-    public JerseyModule(JerseyConfiguration jerseyConfiguration, Consumer<Server> jettyConfigurer) {
+    public JerseyModule(JerseyConfiguration jerseyConfiguration, JettyServerCreator jettyServerCreator) {
         this.jerseyConfiguration = Objects.requireNonNull(jerseyConfiguration);
-        this.jettyConfigurer = jettyConfigurer;
+        this.jettyServerCreator = Objects.requireNonNull(jettyServerCreator);
     }
 
     protected void configure() {
         Provider<Injector> injectorProvider = getProvider(Injector.class);
 
         install(new ServletModule());
-        bind(JerseyServer.class).toInstance(new JerseyServer(jerseyConfiguration, injectorProvider::get, jettyConfigurer));
+        bind(JerseyServer.class).toInstance(new JerseyServer(jerseyConfiguration, injectorProvider::get, jettyServerCreator));
         bind(JerseyConfiguration.class).toInstance(jerseyConfiguration);
     }
 
