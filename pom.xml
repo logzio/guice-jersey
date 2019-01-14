@@ -126,7 +126,7 @@
         <jetty.version>9.4.12.v20180830</jetty.version>
         <guice.version>4.1.0</guice.version>
         <slf4j.version>1.7.25</slf4j.version>
-        <jackson.version>2.9.7</jackson.version>
+        <jackson.version>2.9.8</jackson.version>
     </properties>
 
     <dependencies>
