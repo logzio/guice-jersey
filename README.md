@@ -4,7 +4,7 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.logz/guice-jersey/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.logz/guice-jersey)
 
 ## Introduction
-Jersey comes with its own dependency injection framework for instantiating its classes. 
+Jersey comes with its own dependency injection framework for instantiating its classes.
 If you're using Guice as your dependency injection framework, and you want to inject your own classes into the JAX-RS classes you created - such as Resources and Filters - you need to bridge the gap between the two DI frameworks.
 This module aims to do just that by booting Jetty based Jersey server and initializing the bridge between HK2 and Guice.
 
@@ -13,7 +13,7 @@ This module aims to do just that by booting Jetty based Jersey server and initia
 ### Gradle
 
 ```groovy
-compile 'io.logz:guice-jersey:1.0.5'
+compile 'io.logz:guice-jersey:1.0.6'
 ```
 
 ### Maven
@@ -22,7 +22,7 @@ compile 'io.logz:guice-jersey:1.0.5'
 <dependency>
   <groupId>io.logz</groupId>
   <artifactId>guice-jersey</artifactId>
-  <version>1.0.5</version>
+  <version>1.0.6</version>
 </dependency>
 ```
 ## Usage
@@ -40,7 +40,7 @@ public class Main {
             .addPackage("com.example.resources")
             .addPort(8080)
             .build();
-        
+
         List<Module> modules = new ArrayList<>();        
         modules.add(new JerseyModule(configuration));
         modules.add(new AbstractModule() {
@@ -49,7 +49,7 @@ public class Main {
             // Your module bindings ...
           }
         });
-        
+
         Guice.createInjector(modules)
           .getInstance(JerseyServer.class).start();
     }
@@ -68,7 +68,7 @@ My requirements from the rest library were:
 
 Google search yielded the following:
 - Rapidoid - Simple REST framework with async support but no integration with Guice at the time
-- RESTEasy - Implementation of the JAX-RS spec. Has examples of usage with guice, writing async resources and Bean Validation support 
+- RESTEasy - Implementation of the JAX-RS spec. Has examples of usage with guice, writing async resources and Bean Validation support
 but no easy way to use with both async resources and Guice.
 - Jersey - Reference implementation of the JAX-RS spec, same as RESTEasy there was no easy way to answer both async and Guice requirements together.
 
@@ -77,7 +77,7 @@ After spending roughly 1.5 days fighting with those libraries and not getting wh
 ### Why this module?
 I could not find a library which binded the two together: Jersey and Guice. I tried the following:
 - https://github.com/Squarespace/jersey2-guice:
-When I started to read the getting started and saw the example this solution looked too complex and 
+When I started to read the getting started and saw the example this solution looked too complex and
 I looked for a simple way to configure and also wire the web server for you.
 - https://mvnrepository.com/artifact/com.sun.jersey.contribs/jersey-guice:
 Works only with version 1.x of Jersey.
