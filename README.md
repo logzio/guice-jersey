@@ -13,7 +13,7 @@ This module aims to do just that by booting Jetty based Jersey server and initia
 ### Gradle
 
 ```groovy
-compile 'io.logz:guice-jersey:1.0.7'
+compile 'io.logz:guice-jersey:1.0.8'
 ```
 
 ### Maven
@@ -22,7 +22,7 @@ compile 'io.logz:guice-jersey:1.0.7'
 <dependency>
   <groupId>io.logz</groupId>
   <artifactId>guice-jersey</artifactId>
-  <version>1.0.7</version>
+  <version>1.0.8</version>
 </dependency>
 ```
 ## Usage
