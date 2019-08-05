@@ -121,11 +121,11 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <hk2-bridge.version>2.5.0</hk2-bridge.version>
-        <jersey.version>2.28</jersey.version>
-        <jetty.version>9.4.18.v20190429</jetty.version>
-        <guice.version>4.1.0</guice.version>
-        <slf4j.version>1.7.25</slf4j.version>
+        <hk2-bridge.version>2.6.0</hk2-bridge.version>
+        <jersey.version>2.29</jersey.version>
+        <jetty.version>9.4.19.v20190610</jetty.version>
+        <guice.version>4.2.2</guice.version>
+        <slf4j.version>1.7.26</slf4j.version>
         <!--
         There’s an override to `jackson-databind` because not all jackson modules were published at the time.
         Next time when changing the version we should change `jackson-databind` to use this property
@@ -231,13 +231,13 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.1.7</version>
+            <version>1.2.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.8.0</version>
+            <version>3.13.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
