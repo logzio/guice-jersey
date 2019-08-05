@@ -14,11 +14,10 @@ import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
-import java.net.InetAddress;
-import java.util.concurrent.Callable;
+import java.net.Socket;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 public class JerseyServerTest {
 
@@ -84,7 +83,7 @@ public class JerseyServerTest {
     @Test
     public void testHostConfiguration() throws Exception {
         int port = FreePortFinder.findFreeLocalPort();
-        String address = InetAddress.getLocalHost().getHostAddress();
+        String address = new Socket("www.google.com", 80).getLocalAddress().getHostAddress();
 
         JerseyConfigurationBuilder namedHostConfigurationBuilder = JerseyConfiguration.builder()
                 .addHost("127.0.0.1", port)
@@ -104,18 +103,8 @@ public class JerseyServerTest {
         String testResourceResponse = target.path(TestResource.PATH).request().get().readEntity(String.class);
         assertEquals(TestResource.MESSAGE, testResourceResponse);
 
-        // Try to access the resource without the context path
-        WebTarget targetWithoutContextRoot = ClientBuilder.newClient().target("http://" + address + ":" + port);
-        assertThrown(ProcessingException.class, () -> targetWithoutContextRoot.path(TestResource.PATH).request().get());
-    }
-
-    private void assertThrown(Class<? extends Throwable> connectExceptionClass, Callable callable) {
-        try {
-            callable.call();
-            fail("Exception was not thrown");
-        } catch (Throwable e) {
-            assertEquals(connectExceptionClass, e.getClass());
-        }
+        WebTarget targetWithIpAddress = ClientBuilder.newClient().target("http://" + address + ":" + port);
+        assertThatThrownBy(() -> targetWithIpAddress.path(TestResource.PATH).request().get()).isInstanceOf(ProcessingException.class);
     }
 
 }
