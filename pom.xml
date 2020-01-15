@@ -126,11 +126,7 @@
         <jetty.version>9.4.19.v20190610</jetty.version>
         <guice.version>4.2.2</guice.version>
         <slf4j.version>1.7.26</slf4j.version>
-        <!--
-        There’s an override to `jackson-databind` because not all jackson modules were published at the time.
-        Next time when changing the version we should change `jackson-databind` to use this property
-        -->
-        <jackson.version>2.9.9</jackson.version>
+        <jackson.version>2.10.2</jackson.version>
     </properties>
 
     <dependencies>
@@ -219,7 +215,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.9.9.2</version>
+            <version>${jackson.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
