@@ -15,6 +15,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import java.net.Socket;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
@@ -103,7 +104,10 @@ public class JerseyServerTest {
         String testResourceResponse = target.path(TestResource.PATH).request().get().readEntity(String.class);
         assertEquals(TestResource.MESSAGE, testResourceResponse);
 
-        WebTarget targetWithIpAddress = ClientBuilder.newClient().target("http://" + address + ":" + port);
+        WebTarget targetWithIpAddress = ClientBuilder.newBuilder()
+                .connectTimeout(5, TimeUnit.SECONDS)
+                .build()
+                .target("http://" + address + ":" + port);
         assertThatThrownBy(() -> targetWithIpAddress.path(TestResource.PATH).request().get()).isInstanceOf(ProcessingException.class);
     }
 
