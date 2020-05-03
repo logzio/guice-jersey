@@ -5,8 +5,12 @@ import com.google.inject.servlet.GuiceFilter;
 import com.google.inject.servlet.GuiceServletContextListener;
 import io.logz.guice.jersey.configuration.JerseyConfiguration;
 import io.logz.guice.jersey.configuration.ServerConnectorConfiguration;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.handler.HandlerWrapper;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.glassfish.jersey.servlet.ServletContainer;
@@ -74,7 +78,23 @@ public class JerseyServer {
             }
         });
 
-        server.setHandler(webAppContext);
+        setHandler(server, webAppContext);
+    }
+
+    private static void setHandler(HandlerWrapper handlerWrapper, Handler handlerToAdd) {
+        Handler currentInnerHandler = handlerWrapper.getHandler();
+        if (currentInnerHandler == null) {
+            handlerWrapper.setHandler(handlerToAdd);
+        } else if (currentInnerHandler instanceof HandlerCollection) {
+            ((HandlerCollection) currentInnerHandler).addHandler(handlerToAdd);
+        } else if (currentInnerHandler instanceof HandlerWrapper) {
+            setHandler((HandlerWrapper) currentInnerHandler, handlerToAdd);
+        } else {
+            HandlerList handlerList = new HandlerList();
+            handlerList.addHandler(currentInnerHandler);
+            handlerList.addHandler(handlerToAdd);
+            handlerWrapper.setHandler(handlerWrapper);
+        }
     }
 
 }
