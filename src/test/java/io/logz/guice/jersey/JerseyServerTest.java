@@ -7,6 +7,8 @@ import io.logz.guice.jersey.resources.TestResource;
 import io.logz.guice.jersey.resources.recursive.FooResource;
 import io.logz.guice.jersey.supplier.JerseyServerSupplier;
 import me.alexpanov.net.FreePortFinder;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.StatisticsHandler;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.Test;
 
@@ -17,6 +19,7 @@ import javax.ws.rs.core.Response;
 import java.net.Socket;
 import java.util.concurrent.TimeUnit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 
@@ -97,7 +100,29 @@ public class JerseyServerTest {
                 .addResourceClass(TestResource.class);
 
         JerseyServerSupplier.createServerAndTest(configurationBuilder, target -> assertNoAccessFromIp(target, address, port));
+    }
 
+    @Test
+    public void testServerHandlerCanBeConfiguredFromJettyServerCreator() throws Exception {
+        JerseyConfigurationBuilder configurationBuilder = JerseyConfiguration.builder()
+                .addResourceClass(TestResource.class);
+
+        StatisticsHandler statisticsHandler = new StatisticsHandler();
+        JettyServerCreator jettyServerCreator = () -> {
+            Server server = new Server();
+            server.setHandler(statisticsHandler);
+
+            return server;
+        };
+
+        JerseyServerSupplier.createServerAndTest(configurationBuilder, jettyServerCreator, target -> {
+            assertThat(statisticsHandler.getRequests()).isEqualTo(0);
+
+            String testResourceResponse = target.path(TestResource.PATH).request().get().readEntity(String.class);
+            assertEquals(TestResource.MESSAGE, testResourceResponse);
+
+            assertThat(statisticsHandler.getRequests()).isEqualTo(1);
+        });
     }
 
     private void assertNoAccessFromIp(WebTarget target, String address, int port) {

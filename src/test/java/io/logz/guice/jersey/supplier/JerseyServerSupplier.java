@@ -4,9 +4,11 @@ import com.google.inject.Guice;
 import com.google.inject.Module;
 import io.logz.guice.jersey.JerseyModule;
 import io.logz.guice.jersey.JerseyServer;
+import io.logz.guice.jersey.JettyServerCreator;
 import io.logz.guice.jersey.configuration.JerseyConfiguration;
 import io.logz.guice.jersey.configuration.JerseyConfigurationBuilder;
 import me.alexpanov.net.FreePortFinder;
+import org.eclipse.jetty.server.Server;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,11 +31,17 @@ public class JerseyServerSupplier {
     }
 
     public static void createServerAndTest(JerseyConfigurationBuilder configurationBuilder, Tester tester) throws Exception {
+        createServerAndTest(configurationBuilder, Server::new, tester);
+    }
+
+    public static void createServerAndTest(JerseyConfigurationBuilder configurationBuilder,
+                                           JettyServerCreator jettyServerCreator,
+                                           Tester tester) throws Exception {
         int port = FreePortFinder.findFreeLocalPort();
         configurationBuilder.addPort(port);
         JerseyConfiguration configuration = configurationBuilder.build();
 
-        JerseyServer server = createServer(configuration);
+        JerseyServer server = createServer(configuration, jettyServerCreator);
         try {
             server.start();
             LOGGER.info("Started server on port: {}", port);
@@ -46,9 +54,9 @@ public class JerseyServerSupplier {
         }
     }
 
-    private static JerseyServer createServer(JerseyConfiguration configuration) {
+    private static JerseyServer createServer(JerseyConfiguration configuration, JettyServerCreator jettyServerCreator) {
         List<Module> modules = new ArrayList<>();
-        modules.add(new JerseyModule(configuration));
+        modules.add(new JerseyModule(configuration, jettyServerCreator));
 
         return Guice.createInjector(modules)
                 .getInstance(JerseyServer.class);

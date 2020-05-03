@@ -81,7 +81,7 @@ public class JerseyServer {
         setHandler(server, webAppContext);
     }
 
-    private void setHandler(HandlerWrapper handlerWrapper, Handler handlerToAdd) {
+    private static void setHandler(HandlerWrapper handlerWrapper, Handler handlerToAdd) {
         Handler currentInnerHandler = handlerWrapper.getHandler();
         if (currentInnerHandler == null) {
             handlerWrapper.setHandler(handlerToAdd);
