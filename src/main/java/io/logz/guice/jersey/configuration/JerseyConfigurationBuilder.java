@@ -1,5 +1,6 @@
 package io.logz.guice.jersey.configuration;
 
+import org.eclipse.jetty.server.HttpConfiguration;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import java.util.ArrayList;
@@ -35,6 +36,11 @@ public class JerseyConfigurationBuilder {
 
     public JerseyConfigurationBuilder addPort(int port) {
         connectors.add(new ServerConnectorConfiguration(port));
+        return this;
+    }
+
+    public JerseyConfigurationBuilder addPortWithHttpConfiguration(int port, HttpConfiguration httpConfiguration) {
+        connectors.add(new ServerConnectorConfiguration(port, httpConfiguration));
         return this;
     }
 

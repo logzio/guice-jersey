@@ -8,6 +8,7 @@ import io.logz.guice.jersey.JettyServerCreator;
 import io.logz.guice.jersey.configuration.JerseyConfiguration;
 import io.logz.guice.jersey.configuration.JerseyConfigurationBuilder;
 import me.alexpanov.net.FreePortFinder;
+import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.Server;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
@@ -38,7 +39,7 @@ public class JerseyServerSupplier {
                                            JettyServerCreator jettyServerCreator,
                                            Tester tester) throws Exception {
         int port = FreePortFinder.findFreeLocalPort();
-        configurationBuilder.addPort(port);
+        configurationBuilder.addPortWithHttpConfiguration(port, new HttpConfiguration());
         JerseyConfiguration configuration = configurationBuilder.build();
 
         JerseyServer server = createServer(configuration, jettyServerCreator);

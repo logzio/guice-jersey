@@ -1,5 +1,7 @@
 package io.logz.guice.jersey.configuration;
 
+import org.eclipse.jetty.server.HttpConfiguration;
+
 import java.util.Objects;
 
 public class ServerConnectorConfiguration {
@@ -9,6 +11,7 @@ public class ServerConnectorConfiguration {
     private String name;
     private String host;
     private int port;
+    private HttpConfiguration httpConfiguration;
 
     ServerConnectorConfiguration(int port) {
         this(ALL_INTERFACES_HOST, port);
@@ -18,10 +21,19 @@ public class ServerConnectorConfiguration {
         this(String.format("%s-%s", host, port), host, port);
     }
 
-    ServerConnectorConfiguration(String name, String host, int port) {
+    ServerConnectorConfiguration(int port, HttpConfiguration httpConfiguration) {
+        this(String.format("%s-%s", ALL_INTERFACES_HOST, port), ALL_INTERFACES_HOST, port, httpConfiguration);
+    }
+
+    ServerConnectorConfiguration(String name, String host, int port){
+        this(name, host, port, new HttpConfiguration());
+    }
+
+    ServerConnectorConfiguration(String name, String host, int port, HttpConfiguration httpConfiguration) {
         this.name = Objects.requireNonNull(name);
         this.host = Objects.requireNonNull(host);
         this.port = validatePort(port);
+        this.httpConfiguration = Objects.requireNonNull(httpConfiguration);
     }
 
     public String getName() {
@@ -34,6 +46,10 @@ public class ServerConnectorConfiguration {
 
     public int getPort() {
         return port;
+    }
+
+    public HttpConfiguration getHttpConfiguration() {
+        return httpConfiguration;
     }
 
     private int validatePort(int port) {
