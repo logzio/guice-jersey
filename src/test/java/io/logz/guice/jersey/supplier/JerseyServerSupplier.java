@@ -39,7 +39,15 @@ public class JerseyServerSupplier {
                                            JettyServerCreator jettyServerCreator,
                                            Tester tester) throws Exception {
         int port = FreePortFinder.findFreeLocalPort();
-        configurationBuilder.addPortWithHttpConfiguration(port, new HttpConfiguration());
+        configurationBuilder.addPort(port);
+
+        createServerAndTest(configurationBuilder, jettyServerCreator, tester, port);
+    }
+
+    public static void createServerAndTest(JerseyConfigurationBuilder configurationBuilder,
+                                           JettyServerCreator jettyServerCreator,
+                                           Tester tester,
+                                           int port) throws Exception {
         JerseyConfiguration configuration = configurationBuilder.build();
 
         JerseyServer server = createServer(configuration, jettyServerCreator);

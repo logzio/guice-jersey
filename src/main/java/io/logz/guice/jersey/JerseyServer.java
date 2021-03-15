@@ -5,6 +5,7 @@ import com.google.inject.servlet.GuiceFilter;
 import com.google.inject.servlet.GuiceServletContextListener;
 import io.logz.guice.jersey.configuration.JerseyConfiguration;
 import io.logz.guice.jersey.configuration.ServerConnectorConfiguration;
+import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
@@ -19,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.DispatcherType;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Supplier;
@@ -43,6 +45,9 @@ public class JerseyServer {
 
     public void start() throws Exception {
         LOGGER.info("Starting embedded jetty server");
+        for (Connector c : server.getConnectors()) {
+            LOGGER.info("size {}",c.getConnectionFactory(HttpConnectionFactory.class).getHttpConfiguration().getRequestHeaderSize());
+        }
         server.start();
     }
 
@@ -54,10 +59,11 @@ public class JerseyServer {
     private void configureServer() {
         List<ServerConnectorConfiguration> serverConnectorConfigurations = jerseyConfiguration.getServerConnectors();
         serverConnectorConfigurations.forEach(configuration -> {
-            ServerConnector connector = new ServerConnector(server, new HttpConnectionFactory(configuration.getHttpConfiguration()));
+            ServerConnector connector = new ServerConnector(server);
             connector.setName(configuration.getName());
             connector.setHost(configuration.getHost());
             connector.setPort(configuration.getPort());
+            connector.setConnectionFactories(Collections.singleton(new HttpConnectionFactory(configuration.getHttpConfiguration())));
             server.addConnector(connector);
         });
 

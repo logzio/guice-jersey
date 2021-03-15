@@ -6,30 +6,12 @@ import java.util.Objects;
 
 public class ServerConnectorConfiguration {
 
-    private static final String ALL_INTERFACES_HOST = "0.0.0.0";
-
     private String name;
     private String host;
     private int port;
     private HttpConfiguration httpConfiguration;
 
-    ServerConnectorConfiguration(int port) {
-        this(ALL_INTERFACES_HOST, port);
-    }
-
-    ServerConnectorConfiguration(String host, int port) {
-        this(String.format("%s-%s", host, port), host, port);
-    }
-
-    ServerConnectorConfiguration(int port, HttpConfiguration httpConfiguration) {
-        this(String.format("%s-%s", ALL_INTERFACES_HOST, port), ALL_INTERFACES_HOST, port, httpConfiguration);
-    }
-
-    ServerConnectorConfiguration(String name, String host, int port){
-        this(name, host, port, new HttpConfiguration());
-    }
-
-    ServerConnectorConfiguration(String name, String host, int port, HttpConfiguration httpConfiguration) {
+    private ServerConnectorConfiguration(String name, String host, int port, HttpConfiguration httpConfiguration) {
         this.name = Objects.requireNonNull(name);
         this.host = Objects.requireNonNull(host);
         this.port = validatePort(port);
@@ -78,6 +60,49 @@ public class ServerConnectorConfiguration {
         result = 31 * result + (host != null ? host.hashCode() : 0);
         result = 31 * result + port;
         return result;
+    }
+
+    public static Builder builder(int port) {
+        return new Builder(port);
+    }
+
+    public static class Builder {
+
+        private static final String ALL_INTERFACES_HOST = "0.0.0.0";
+
+        private String name;
+        private String host;
+        private int port;
+        private HttpConfiguration httpConfiguration;
+
+        public Builder(int port) {
+            this.port = port;
+            this.host = ALL_INTERFACES_HOST;
+            this.name = String.format("%s-%s", ALL_INTERFACES_HOST, port);
+            this.httpConfiguration = new HttpConfiguration();
+        }
+
+        public Builder withName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder withHost(String host) {
+            this.host = host;
+            if(name.equals(String.format("%s-%s", ALL_INTERFACES_HOST, port))){
+                name = String.format("%s-%s", host, port);
+            }
+            return this;
+        }
+
+        public Builder withHttpConfiguration(HttpConfiguration httpConfiguration) {
+            this.httpConfiguration = httpConfiguration;
+            return this;
+        }
+
+        public ServerConnectorConfiguration build() {
+            return new ServerConnectorConfiguration(name, host, port, httpConfiguration);
+        }
     }
 
 }

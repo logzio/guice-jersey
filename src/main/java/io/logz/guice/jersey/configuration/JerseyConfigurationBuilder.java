@@ -35,22 +35,22 @@ public class JerseyConfigurationBuilder {
     }
 
     public JerseyConfigurationBuilder addPort(int port) {
-        connectors.add(new ServerConnectorConfiguration(port));
+        connectors.add(ServerConnectorConfiguration.builder(port).build());
         return this;
     }
 
-    public JerseyConfigurationBuilder addPortWithHttpConfiguration(int port, HttpConfiguration httpConfiguration) {
-        connectors.add(new ServerConnectorConfiguration(port, httpConfiguration));
+    public JerseyConfigurationBuilder addConnectorConfig(ServerConnectorConfiguration connectorConfig) {
+        connectors.add(connectorConfig);
         return this;
     }
 
     public JerseyConfigurationBuilder addHost(String host, int port) {
-        connectors.add(new ServerConnectorConfiguration(host, port));
+        connectors.add(ServerConnectorConfiguration.builder(port).withHost(host).build());
         return this;
     }
 
     public JerseyConfigurationBuilder addNamedHost(String name, String host, int port) {
-        connectors.add(new ServerConnectorConfiguration(name, host, port));
+        connectors.add(ServerConnectorConfiguration.builder(port).withName(name).withHost(host).build());
         return this;
     }
 
