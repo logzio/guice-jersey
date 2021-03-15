@@ -8,7 +8,6 @@ import io.logz.guice.jersey.JettyServerCreator;
 import io.logz.guice.jersey.configuration.JerseyConfiguration;
 import io.logz.guice.jersey.configuration.JerseyConfigurationBuilder;
 import me.alexpanov.net.FreePortFinder;
-import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.Server;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;

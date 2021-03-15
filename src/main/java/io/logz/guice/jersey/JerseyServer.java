@@ -45,9 +45,6 @@ public class JerseyServer {
 
     public void start() throws Exception {
         LOGGER.info("Starting embedded jetty server");
-        for (Connector c : server.getConnectors()) {
-            LOGGER.info("size {}",c.getConnectionFactory(HttpConnectionFactory.class).getHttpConfiguration().getRequestHeaderSize());
-        }
         server.start();
     }
 
