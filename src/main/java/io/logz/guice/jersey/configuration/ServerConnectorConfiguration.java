@@ -78,7 +78,7 @@ public class ServerConnectorConfiguration {
         public Builder(int port) {
             this.port = port;
             this.host = ALL_INTERFACES_HOST;
-            this.name = String.format("%s-%s", ALL_INTERFACES_HOST, port);
+            this.name = null;
             this.httpConfiguration = new HttpConfiguration();
         }
 
@@ -89,9 +89,6 @@ public class ServerConnectorConfiguration {
 
         public Builder withHost(String host) {
             this.host = host;
-            if(name.equals(String.format("%s-%s", ALL_INTERFACES_HOST, port))){
-                name = String.format("%s-%s", host, port);
-            }
             return this;
         }
 
@@ -101,6 +98,9 @@ public class ServerConnectorConfiguration {
         }
 
         public ServerConnectorConfiguration build() {
+            if (name == null) {
+                name = String.format("%s-%s", host, port);
+            }
             return new ServerConnectorConfiguration(name, host, port, httpConfiguration);
         }
     }
