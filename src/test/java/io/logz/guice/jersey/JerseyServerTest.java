@@ -2,11 +2,14 @@ package io.logz.guice.jersey;
 
 import io.logz.guice.jersey.configuration.JerseyConfiguration;
 import io.logz.guice.jersey.configuration.JerseyConfigurationBuilder;
+import io.logz.guice.jersey.configuration.ServerConnectorConfiguration;
 import io.logz.guice.jersey.resources.PingResource;
 import io.logz.guice.jersey.resources.TestResource;
 import io.logz.guice.jersey.resources.recursive.FooResource;
 import io.logz.guice.jersey.supplier.JerseyServerSupplier;
 import me.alexpanov.net.FreePortFinder;
+import org.assertj.core.internal.bytebuddy.utility.RandomString;
+import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.StatisticsHandler;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -32,6 +35,26 @@ public class JerseyServerTest {
             String response = target.path(TestResource.PATH).request().get().readEntity(String.class);
             assertEquals(TestResource.MESSAGE, response);
         });
+    }
+
+    @Test
+    public void testMaxHeaderRequestSize() throws Exception {
+        int port = FreePortFinder.findFreeLocalPort();
+        HttpConfiguration httpConfiguration = new HttpConfiguration();
+        httpConfiguration.setRequestHeaderSize(16384);
+
+        ServerConnectorConfiguration connectorConfiguration =
+                ServerConnectorConfiguration.builder(port).withHttpConfiguration(httpConfiguration).build();
+
+        JerseyConfigurationBuilder connectorConfigurationBuilder = JerseyConfiguration.builder()
+                .addConnectorConfig(connectorConfiguration)
+                .addResourceClass(TestResource.class);
+
+        JerseyServerSupplier.createServerAndTest(connectorConfigurationBuilder, Server::new, target -> {
+            String response = target.path(TestResource.PATH).request()
+                    .header("test", RandomString.make(16384 / Character.BYTES)).get().readEntity(String.class);
+            assertEquals(TestResource.MESSAGE, response);
+        }, port);
     }
 
     @Test

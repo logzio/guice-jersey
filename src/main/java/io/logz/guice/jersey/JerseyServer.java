@@ -5,7 +5,9 @@ import com.google.inject.servlet.GuiceFilter;
 import com.google.inject.servlet.GuiceServletContextListener;
 import io.logz.guice.jersey.configuration.JerseyConfiguration;
 import io.logz.guice.jersey.configuration.ServerConnectorConfiguration;
+import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.HandlerCollection;
@@ -18,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.DispatcherType;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Supplier;
@@ -57,6 +60,7 @@ public class JerseyServer {
             connector.setName(configuration.getName());
             connector.setHost(configuration.getHost());
             connector.setPort(configuration.getPort());
+            connector.setConnectionFactories(Collections.singleton(new HttpConnectionFactory(configuration.getHttpConfiguration())));
             server.addConnector(connector);
         });
 

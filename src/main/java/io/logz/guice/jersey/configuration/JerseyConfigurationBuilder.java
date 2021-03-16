@@ -1,5 +1,6 @@
 package io.logz.guice.jersey.configuration;
 
+import org.eclipse.jetty.server.HttpConfiguration;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import java.util.ArrayList;
@@ -34,17 +35,22 @@ public class JerseyConfigurationBuilder {
     }
 
     public JerseyConfigurationBuilder addPort(int port) {
-        connectors.add(new ServerConnectorConfiguration(port));
+        connectors.add(ServerConnectorConfiguration.builder(port).build());
+        return this;
+    }
+
+    public JerseyConfigurationBuilder addConnectorConfig(ServerConnectorConfiguration connectorConfig) {
+        connectors.add(connectorConfig);
         return this;
     }
 
     public JerseyConfigurationBuilder addHost(String host, int port) {
-        connectors.add(new ServerConnectorConfiguration(host, port));
+        connectors.add(ServerConnectorConfiguration.builder(port).withHost(host).build());
         return this;
     }
 
     public JerseyConfigurationBuilder addNamedHost(String name, String host, int port) {
-        connectors.add(new ServerConnectorConfiguration(name, host, port));
+        connectors.add(ServerConnectorConfiguration.builder(port).withName(name).withHost(host).build());
         return this;
     }
 

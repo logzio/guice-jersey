@@ -1,27 +1,21 @@
 package io.logz.guice.jersey.configuration;
 
+import org.eclipse.jetty.server.HttpConfiguration;
+
 import java.util.Objects;
 
 public class ServerConnectorConfiguration {
 
-    private static final String ALL_INTERFACES_HOST = "0.0.0.0";
-
     private String name;
     private String host;
     private int port;
+    private HttpConfiguration httpConfiguration;
 
-    ServerConnectorConfiguration(int port) {
-        this(ALL_INTERFACES_HOST, port);
-    }
-
-    ServerConnectorConfiguration(String host, int port) {
-        this(String.format("%s-%s", host, port), host, port);
-    }
-
-    ServerConnectorConfiguration(String name, String host, int port) {
+    private ServerConnectorConfiguration(String name, String host, int port, HttpConfiguration httpConfiguration) {
         this.name = Objects.requireNonNull(name);
         this.host = Objects.requireNonNull(host);
         this.port = validatePort(port);
+        this.httpConfiguration = Objects.requireNonNull(httpConfiguration);
     }
 
     public String getName() {
@@ -34,6 +28,10 @@ public class ServerConnectorConfiguration {
 
     public int getPort() {
         return port;
+    }
+
+    public HttpConfiguration getHttpConfiguration() {
+        return httpConfiguration;
     }
 
     private int validatePort(int port) {
@@ -62,6 +60,49 @@ public class ServerConnectorConfiguration {
         result = 31 * result + (host != null ? host.hashCode() : 0);
         result = 31 * result + port;
         return result;
+    }
+
+    public static Builder builder(int port) {
+        return new Builder(port);
+    }
+
+    public static class Builder {
+
+        private static final String ALL_INTERFACES_HOST = "0.0.0.0";
+
+        private String name;
+        private String host;
+        private int port;
+        private HttpConfiguration httpConfiguration;
+
+        public Builder(int port) {
+            this.port = port;
+            this.host = ALL_INTERFACES_HOST;
+            this.name = null;
+            this.httpConfiguration = new HttpConfiguration();
+        }
+
+        public Builder withName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder withHost(String host) {
+            this.host = host;
+            return this;
+        }
+
+        public Builder withHttpConfiguration(HttpConfiguration httpConfiguration) {
+            this.httpConfiguration = httpConfiguration;
+            return this;
+        }
+
+        public ServerConnectorConfiguration build() {
+            if (name == null) {
+                name = String.format("%s-%s", host, port);
+            }
+            return new ServerConnectorConfiguration(name, host, port, httpConfiguration);
+        }
     }
 
 }
