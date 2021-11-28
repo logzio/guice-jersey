@@ -12,15 +12,17 @@ import java.io.IOException;
 public class JettyTestFilter implements Filter {
 
     public static final String TEST_HEADER = "X-JETTY-FILTER-TEST-HEADER";
+    public static final String INIT_PARAM_KEY = "INIT_PARAM_KEY";
+    private String initParamValue;
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-
+    public void init(FilterConfig filterConfig) {
+        initParamValue = filterConfig.getInitParameter(INIT_PARAM_KEY);
     }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        ((HttpServletResponse) response).addHeader(TEST_HEADER, "filter-worked");
+        ((HttpServletResponse) response).addHeader(TEST_HEADER, initParamValue);
         chain.doFilter(request, response);
     }
 

@@ -1,9 +1,9 @@
 package io.logz.guice.jersey;
 
 import com.google.inject.Injector;
-import com.google.inject.servlet.GuiceFilter;
 import com.google.inject.servlet.GuiceServletContextListener;
 import io.logz.guice.jersey.configuration.JerseyConfiguration;
+import io.logz.guice.jersey.configuration.JettyServerConfiguration;
 import io.logz.guice.jersey.configuration.ServerConnectorConfiguration;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConnectionFactory;
@@ -12,16 +12,13 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
-import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.DispatcherType;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -30,18 +27,18 @@ public class JerseyServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(JerseyServer.class);
 
     private final JerseyConfiguration jerseyConfiguration;
+    private final JettyServerConfiguration jettyServerConfiguration;
     private final Supplier<Injector> injectorSupplier;
     private final Server server;
-    private final List<JettyFilterDefinition> jettyFilterDefinitions;
 
     JerseyServer(JerseyConfiguration jerseyConfiguration,
                  Supplier<Injector> injectorSupplier,
                  JettyServerCreator jettyServerCreator,
-                 List<JettyFilterDefinition> jettyFilterDefinitions) {
+                 JettyServerConfiguration jettyServerConfiguration) {
         this.jerseyConfiguration = jerseyConfiguration;
         this.injectorSupplier = injectorSupplier;
         this.server = jettyServerCreator.create();
-        this.jettyFilterDefinitions = jettyFilterDefinitions;
+        this.jettyServerConfiguration = jettyServerConfiguration;
 
         configureServer();
     }
@@ -69,14 +66,8 @@ public class JerseyServer {
 
         WebAppContext webAppContext = new WebAppContext();
         webAppContext.setServer(server);
-
-        webAppContext.addFilter(GuiceFilter.class, "/*", EnumSet.allOf(DispatcherType.class));
-        jettyFilterDefinitions.forEach(jettyFilterDefinition -> {
-            FilterHolder filterHolder = new FilterHolder(jettyFilterDefinition.getFilterClass());
-            if (!jettyFilterDefinition.getInitParameters().isEmpty())
-                filterHolder.setInitParameters(jettyFilterDefinition.getInitParameters());
-            webAppContext.addFilter(filterHolder, jettyFilterDefinition.getPathSpec(), jettyFilterDefinition.getDispatches());
-        });
+        if (jettyServerConfiguration != null)
+            jettyServerConfiguration.webAppContextConfiguration(webAppContext);
 
         ServletHolder holder = new ServletHolder(ServletContainer.class);
         holder.setInitParameter("javax.ws.rs.Application", GuiceJerseyResourceConfig.class.getName());
