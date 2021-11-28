@@ -4,6 +4,7 @@ import com.google.inject.Guice;
 import com.google.inject.Module;
 import io.logz.guice.jersey.JerseyModule;
 import io.logz.guice.jersey.JerseyServer;
+import io.logz.guice.jersey.JettyFilterDefinition;
 import io.logz.guice.jersey.JettyServerCreator;
 import io.logz.guice.jersey.configuration.JerseyConfiguration;
 import io.logz.guice.jersey.configuration.JerseyConfigurationBuilder;
@@ -17,6 +18,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class JerseyServerSupplier {
@@ -49,7 +51,7 @@ public class JerseyServerSupplier {
                                            int port) throws Exception {
         JerseyConfiguration configuration = configurationBuilder.build();
 
-        JerseyServer server = createServer(configuration, jettyServerCreator);
+        JerseyServer server = createServer(configuration, jettyServerCreator, Collections.emptyList());
         try {
             server.start();
             LOGGER.info("Started server on port: {}", port);
@@ -62,9 +64,30 @@ public class JerseyServerSupplier {
         }
     }
 
-    private static JerseyServer createServer(JerseyConfiguration configuration, JettyServerCreator jettyServerCreator) {
+    public static void createServerAndTest(JerseyConfigurationBuilder configurationBuilder,
+                                           JettyServerCreator jettyServerCreator,
+                                           Tester tester,
+                                           int port,
+                                           List<JettyFilterDefinition> jettyFilterDefinitions) throws Exception {
+        JerseyConfiguration configuration = configurationBuilder.build();
+
+        JerseyServer server = createServer(configuration, jettyServerCreator, jettyFilterDefinitions);
+        try {
+            server.start();
+            LOGGER.info("Started server on port: {}", port);
+
+            Client client = ClientBuilder.newClient();
+            WebTarget target = client.target("http://localhost:" + port).path(configuration.getContextPath());
+            tester.test(target);
+        } finally {
+            server.stop();
+        }
+    }
+
+
+    private static JerseyServer createServer(JerseyConfiguration configuration, JettyServerCreator jettyServerCreator, List<JettyFilterDefinition> jettyFilterDefinitions) {
         List<Module> modules = new ArrayList<>();
-        modules.add(new JerseyModule(configuration, jettyServerCreator));
+        modules.add(new JerseyModule(configuration, jettyServerCreator, jettyFilterDefinitions));
 
         return Guice.createInjector(modules)
                 .getInstance(JerseyServer.class);
