@@ -3,7 +3,7 @@ package io.logz.guice.jersey;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
 import io.logz.guice.jersey.configuration.JerseyConfiguration;
-import io.logz.guice.jersey.configuration.JettyServerConfiguration;
+import io.logz.guice.jersey.configuration.JerseyWebApplicationConfigurator;
 import io.logz.guice.jersey.configuration.ServerConnectorConfiguration;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConnectionFactory;
@@ -27,18 +27,18 @@ public class JerseyServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(JerseyServer.class);
 
     private final JerseyConfiguration jerseyConfiguration;
-    private final JettyServerConfiguration jettyServerConfiguration;
+    private final JerseyWebApplicationConfigurator jerseyWebApplicationConfigurator;
     private final Supplier<Injector> injectorSupplier;
     private final Server server;
 
     JerseyServer(JerseyConfiguration jerseyConfiguration,
                  Supplier<Injector> injectorSupplier,
                  JettyServerCreator jettyServerCreator,
-                 JettyServerConfiguration jettyServerConfiguration) {
+                 JerseyWebApplicationConfigurator jerseyWebApplicationConfigurator) {
         this.jerseyConfiguration = jerseyConfiguration;
         this.injectorSupplier = injectorSupplier;
         this.server = jettyServerCreator.create();
-        this.jettyServerConfiguration = jettyServerConfiguration;
+        this.jerseyWebApplicationConfigurator = jerseyWebApplicationConfigurator;
 
         configureServer();
     }
@@ -65,9 +65,9 @@ public class JerseyServer {
         });
 
         WebAppContext webAppContext = new WebAppContext();
+        if (jerseyWebApplicationConfigurator != null)
+            jerseyWebApplicationConfigurator.configure(webAppContext);
         webAppContext.setServer(server);
-        if (jettyServerConfiguration != null)
-            jettyServerConfiguration.webAppContextConfiguration(webAppContext);
 
         ServletHolder holder = new ServletHolder(ServletContainer.class);
         holder.setInitParameter("javax.ws.rs.Application", GuiceJerseyResourceConfig.class.getName());

@@ -7,7 +7,7 @@ import io.logz.guice.jersey.JerseyServer;
 import io.logz.guice.jersey.JettyServerCreator;
 import io.logz.guice.jersey.configuration.JerseyConfiguration;
 import io.logz.guice.jersey.configuration.JerseyConfigurationBuilder;
-import io.logz.guice.jersey.configuration.JettyServerConfiguration;
+import io.logz.guice.jersey.configuration.JerseyWebApplicationConfigurator;
 import me.alexpanov.net.FreePortFinder;
 import org.eclipse.jetty.server.Server;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -67,10 +67,10 @@ public class JerseyServerSupplier {
                                            JettyServerCreator jettyServerCreator,
                                            Tester tester,
                                            int port,
-                                           JettyServerConfiguration jettyServerConfiguration) throws Exception {
+                                           JerseyWebApplicationConfigurator jerseyWebApplicationConfigurator) throws Exception {
         JerseyConfiguration configuration = configurationBuilder.build();
 
-        JerseyServer server = createServer(configuration, jettyServerCreator, jettyServerConfiguration);
+        JerseyServer server = createServer(configuration, jettyServerCreator, jerseyWebApplicationConfigurator);
         try {
             server.start();
             LOGGER.info("Started server on port: {}", port);
@@ -84,9 +84,9 @@ public class JerseyServerSupplier {
     }
 
 
-    private static JerseyServer createServer(JerseyConfiguration configuration, JettyServerCreator jettyServerCreator, JettyServerConfiguration jettyServerConfiguration) {
+    private static JerseyServer createServer(JerseyConfiguration configuration, JettyServerCreator jettyServerCreator, JerseyWebApplicationConfigurator jerseyWebApplicationConfigurator) {
         List<Module> modules = new ArrayList<>();
-        modules.add(new JerseyModule(configuration, jettyServerCreator, jettyServerConfiguration));
+        modules.add(new JerseyModule(configuration, jettyServerCreator, jerseyWebApplicationConfigurator));
 
         return Guice.createInjector(modules)
                 .getInstance(JerseyServer.class);

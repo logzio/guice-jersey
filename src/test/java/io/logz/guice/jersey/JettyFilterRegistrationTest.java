@@ -8,7 +8,6 @@ import io.logz.guice.jersey.supplier.JerseyServerSupplier;
 import me.alexpanov.net.FreePortFinder;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.FilterHolder;
-import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.Test;
 
 import javax.servlet.DispatcherType;
@@ -23,9 +22,8 @@ public class JettyFilterRegistrationTest {
 
     @Test
     public void testJettyFilter() throws Exception {
-        ResourceConfig resourceConfig = new ResourceConfig().registerClasses(TestResource.class);
         JerseyConfigurationBuilder configurationBuilder = JerseyConfiguration.builder()
-                .withResourceConfig(resourceConfig);
+                .addResourceClass(TestResource.class);
         int port = FreePortFinder.findFreeLocalPort();
         configurationBuilder.addPort(port);
 
