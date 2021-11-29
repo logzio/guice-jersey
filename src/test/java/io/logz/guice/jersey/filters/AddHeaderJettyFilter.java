@@ -9,7 +9,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class JettyTestFilter implements Filter {
+public class AddHeaderJettyFilter implements Filter {
 
     public static final String TEST_HEADER = "X-JETTY-FILTER-TEST-HEADER";
     public static final String INIT_PARAM_KEY = "INIT_PARAM_KEY";

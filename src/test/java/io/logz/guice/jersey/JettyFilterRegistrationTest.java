@@ -2,7 +2,7 @@ package io.logz.guice.jersey;
 
 import io.logz.guice.jersey.configuration.JerseyConfiguration;
 import io.logz.guice.jersey.configuration.JerseyConfigurationBuilder;
-import io.logz.guice.jersey.filters.JettyTestFilter;
+import io.logz.guice.jersey.filters.AddHeaderJettyFilter;
 import io.logz.guice.jersey.resources.TestResource;
 import io.logz.guice.jersey.supplier.JerseyServerSupplier;
 import me.alexpanov.net.FreePortFinder;
@@ -31,16 +31,16 @@ public class JettyFilterRegistrationTest {
 
         JerseyServerSupplier.Tester tester = target -> {
             Response response = target.path(TestResource.PATH).request().get();
-            String headerParamValue = response.getHeaderString(JettyTestFilter.TEST_HEADER);
+            String headerParamValue = response.getHeaderString(AddHeaderJettyFilter.TEST_HEADER);
             String responseBody = response.readEntity(String.class);
             assertEquals(TestResource.MESSAGE, responseBody);
             assertEquals(headerParamValue, myTestValue);
         };
 
         JerseyServerSupplier.createServerAndTest(configurationBuilder, Server::new, tester, port, webAppContext -> {
-            FilterHolder filterHolder = new FilterHolder(JettyTestFilter.class);
+            FilterHolder filterHolder = new FilterHolder(AddHeaderJettyFilter.class);
             Map<String, String> initParams = new HashMap<>();
-            initParams.put(JettyTestFilter.INIT_PARAM_KEY, myTestValue);
+            initParams.put(AddHeaderJettyFilter.INIT_PARAM_KEY, myTestValue);
             filterHolder.setInitParameters(initParams);
             webAppContext.addFilter(filterHolder, "/*", EnumSet.allOf(DispatcherType.class));
         });
