@@ -5,7 +5,6 @@ import io.logz.guice.jersey.configuration.JerseyConfigurationBuilder;
 import io.logz.guice.jersey.filters.AddHeaderJettyFilter;
 import io.logz.guice.jersey.resources.TestResource;
 import io.logz.guice.jersey.supplier.JerseyServerSupplier;
-import me.alexpanov.net.FreePortFinder;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.junit.Test;
@@ -24,8 +23,6 @@ public class JettyFilterRegistrationTest {
     public void testJettyFilter() throws Exception {
         JerseyConfigurationBuilder configurationBuilder = JerseyConfiguration.builder()
                 .addResourceClass(TestResource.class);
-        int port = FreePortFinder.findFreeLocalPort();
-        configurationBuilder.addPort(port);
 
         String myTestValue = "param";
 
@@ -37,7 +34,7 @@ public class JettyFilterRegistrationTest {
             assertEquals(headerParamValue, myTestValue);
         };
 
-        JerseyServerSupplier.createServerAndTest(configurationBuilder, Server::new, tester, port, webAppContext -> {
+        JerseyServerSupplier.createServerAndTest(configurationBuilder, Server::new, tester, webAppContext -> {
             FilterHolder filterHolder = new FilterHolder(AddHeaderJettyFilter.class);
             Map<String, String> initParams = new HashMap<>();
             initParams.put(AddHeaderJettyFilter.INIT_PARAM_KEY, myTestValue);
