@@ -26,5 +26,3 @@ jobs:
       run: ./mvnw install -DskipTests -Dgpg.skip
     - name: Test with Maven
       run: ./mvnw test -Dgpg.skip
-    - name: Publish Test Cover Report
-      run: ./mvnw cobertura:cobertura coveralls:report
