@@ -1,6 +1,7 @@
 package io.logz.guice.jersey;
 
 import com.google.inject.Injector;
+import com.google.inject.servlet.GuiceFilter;
 import com.google.inject.servlet.GuiceServletContextListener;
 import io.logz.guice.jersey.configuration.JerseyConfiguration;
 import io.logz.guice.jersey.configuration.JerseyWebApplicationConfigurator;
@@ -18,7 +19,9 @@ import org.glassfish.jersey.servlet.ServletContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.DispatcherType;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -68,6 +71,8 @@ public class JerseyServer {
         if (jerseyWebApplicationConfigurator != null)
             jerseyWebApplicationConfigurator.configure(webAppContext);
         webAppContext.setServer(server);
+
+        webAppContext.addFilter(GuiceFilter.class, "/*", EnumSet.allOf(DispatcherType.class));
 
         ServletHolder holder = new ServletHolder(ServletContainer.class);
         holder.setInitParameter("javax.ws.rs.Application", GuiceJerseyResourceConfig.class.getName());
