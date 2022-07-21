@@ -4,7 +4,7 @@
 
     <groupId>io.logz</groupId>
     <artifactId>guice-jersey</artifactId>
-    <version>1.0.16-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
 
     <packaging>jar</packaging>
     <name>guice-jersey</name>
@@ -18,8 +18,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.6.0</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>11</source>
+                    <target>11</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -38,7 +38,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.10.4</version>
+                <version>3.4.0</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -121,12 +121,12 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <hk2-bridge.version>2.6.0</hk2-bridge.version>
-        <jersey.version>2.29</jersey.version>
-        <jetty.version>9.4.28.v20200408</jetty.version>
-        <guice.version>4.2.2</guice.version>
-        <slf4j.version>1.7.26</slf4j.version>
-        <jackson.version>2.10.2</jackson.version>
+        <hk2-bridge.version>2.6.1</hk2-bridge.version>
+        <jersey.version>2.36</jersey.version>
+        <jetty.version>10.0.11</jetty.version>
+        <guice.version>5.1.0</guice.version>
+        <slf4j.version>1.7.36</slf4j.version>
+        <jackson.version>2.13.3</jackson.version>
     </properties>
 
     <dependencies>
@@ -175,7 +175,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -227,7 +227,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.2.3</version>
+            <version>1.2.11</version>
             <scope>test</scope>
         </dependency>
         <dependency>
