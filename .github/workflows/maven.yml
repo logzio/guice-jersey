@@ -22,7 +22,11 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
         cache: maven
-    - name: Build with Maven
-      run: ./mvnw install -DskipTests -Dgpg.skip
-    - name: Test with Maven
-      run: ./mvnw test -Dgpg.skip
+    - name: Install
+      run: |
+        echo 'Install on ' ${GITHUB_REF##*/}
+        ./mvnw install -DskipTests  -Dgpg.skip
+    - name: Test
+      run: |
+        echo 'Start tests on ' ${GITHUB_REF##*/}
+        ./mvnw test
