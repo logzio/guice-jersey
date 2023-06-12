@@ -9,8 +9,8 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.junit.Test;
 
-import javax.servlet.DispatcherType;
-import javax.ws.rs.core.Response;
+import jakarta.servlet.DispatcherType;
+import jakarta.ws.rs.core.Response;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;

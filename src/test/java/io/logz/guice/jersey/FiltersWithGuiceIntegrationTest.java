@@ -8,7 +8,7 @@ import io.logz.guice.jersey.resources.TestResource;
 import io.logz.guice.jersey.supplier.JerseyServerSupplier;
 import org.junit.Test;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 import static org.junit.Assert.assertEquals;
 

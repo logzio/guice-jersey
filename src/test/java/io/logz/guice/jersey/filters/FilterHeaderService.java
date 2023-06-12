@@ -1,6 +1,6 @@
 package io.logz.guice.jersey.filters;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 @Singleton
 public class FilterHeaderService {

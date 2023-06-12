@@ -1,6 +1,5 @@
 package io.logz.guice.jersey.configuration;
 
-import org.eclipse.jetty.server.HttpConfiguration;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import java.util.ArrayList;
