@@ -6,8 +6,8 @@ import io.logz.guice.jersey.supplier.JerseyServerSupplier;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.Test;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MediaType;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;

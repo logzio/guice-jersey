@@ -5,8 +5,8 @@ import io.logz.guice.jersey.supplier.JerseyServerSupplier;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.Test;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.sse.SseEventSource;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.sse.SseEventSource;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;

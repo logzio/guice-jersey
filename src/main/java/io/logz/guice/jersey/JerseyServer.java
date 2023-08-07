@@ -19,7 +19,7 @@ import org.glassfish.jersey.servlet.ServletContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.DispatcherType;
+import jakarta.servlet.DispatcherType;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -75,7 +75,7 @@ public class JerseyServer {
         webAppContext.addFilter(GuiceFilter.class, "/*", EnumSet.allOf(DispatcherType.class));
 
         ServletHolder holder = new ServletHolder(ServletContainer.class);
-        holder.setInitParameter("javax.ws.rs.Application", GuiceJerseyResourceConfig.class.getName());
+        holder.setInitParameter("jakarta.ws.rs.Application", GuiceJerseyResourceConfig.class.getName());
 
         webAppContext.addServlet(holder, "/*");
         webAppContext.setResourceBase("/");
