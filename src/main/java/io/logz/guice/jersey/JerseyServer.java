@@ -6,20 +6,18 @@ import com.google.inject.servlet.GuiceServletContextListener;
 import io.logz.guice.jersey.configuration.JerseyConfiguration;
 import io.logz.guice.jersey.configuration.JerseyWebApplicationConfigurator;
 import io.logz.guice.jersey.configuration.ServerConnectorConfiguration;
+import jakarta.servlet.DispatcherType;
+import org.eclipse.jetty.ee10.servlet.ServletHolder;
+import org.eclipse.jetty.ee10.webapp.WebAppContext;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.server.handler.HandlerCollection;
-import org.eclipse.jetty.server.handler.HandlerList;
-import org.eclipse.jetty.server.handler.HandlerWrapper;
-import org.eclipse.jetty.servlet.ServletHolder;
-import org.eclipse.jetty.webapp.WebAppContext;
+
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.servlet.DispatcherType;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -78,7 +76,7 @@ public class JerseyServer {
         holder.setInitParameter("jakarta.ws.rs.Application", GuiceJerseyResourceConfig.class.getName());
 
         webAppContext.addServlet(holder, "/*");
-        webAppContext.setResourceBase("/");
+        webAppContext.setBaseResourceAsString("/");
         webAppContext.setContextPath(jerseyConfiguration.getContextPath());
         webAppContext.addEventListener(new GuiceServletContextListener() {
             @Override
@@ -90,20 +88,19 @@ public class JerseyServer {
         setHandler(server, webAppContext);
     }
 
-    private static void setHandler(HandlerWrapper handlerWrapper, Handler handlerToAdd) {
+    private static void setHandler(Handler.Wrapper handlerWrapper, Handler handlerToAdd) {
         Handler currentInnerHandler = handlerWrapper.getHandler();
         if (currentInnerHandler == null) {
             handlerWrapper.setHandler(handlerToAdd);
-        } else if (currentInnerHandler instanceof HandlerCollection) {
-            ((HandlerCollection) currentInnerHandler).addHandler(handlerToAdd);
-        } else if (currentInnerHandler instanceof HandlerWrapper) {
-            setHandler((HandlerWrapper) currentInnerHandler, handlerToAdd);
+        } else if (currentInnerHandler instanceof Handler.Collection) {
+            ((Handler.Collection) currentInnerHandler).addHandler(handlerToAdd);
+        } else if (currentInnerHandler instanceof Handler.Wrapper) {
+            setHandler((Handler.Wrapper) currentInnerHandler, handlerToAdd);
         } else {
-            HandlerList handlerList = new HandlerList();
+            Handler.Sequence handlerList = new Handler.Sequence();
             handlerList.addHandler(currentInnerHandler);
             handlerList.addHandler(handlerToAdd);
             handlerWrapper.setHandler(handlerWrapper);
         }
     }
-
 }

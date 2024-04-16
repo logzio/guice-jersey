@@ -130,8 +130,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <hk2-bridge.version>3.0.4</hk2-bridge.version>
-        <jersey.version>3.0.10</jersey.version>
-        <jetty.version>11.0.15</jetty.version>
+        <jersey.version>3.1.6</jersey.version>
+        <jetty.version>12.0.8</jetty.version>
         <guice.version>7.0.0</guice.version>
         <slf4j.version>1.7.36</slf4j.version>
         <jackson.version>2.15.0</jackson.version>
@@ -165,8 +165,8 @@
             <version>${jetty.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-webapp</artifactId>
+            <groupId>org.eclipse.jetty.ee10</groupId>
+            <artifactId>jetty-ee10-webapp</artifactId>
             <version>${jetty.version}</version>
         </dependency>
         <dependency>

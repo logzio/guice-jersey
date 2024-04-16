@@ -5,8 +5,8 @@ import io.logz.guice.jersey.configuration.JerseyConfigurationBuilder;
 import io.logz.guice.jersey.filters.AddHeaderJettyFilter;
 import io.logz.guice.jersey.resources.TestResource;
 import io.logz.guice.jersey.supplier.JerseyServerSupplier;
+import org.eclipse.jetty.ee10.servlet.FilterHolder;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.servlet.FilterHolder;
 import org.junit.Test;
 
 import jakarta.servlet.DispatcherType;
