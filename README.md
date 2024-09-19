@@ -3,8 +3,12 @@
 [![Coverage Status](https://coveralls.io/repos/logzio/guice-jersey/badge.svg?branch=master)](https://coveralls.io/r/logzio/guice-jersey?branch=master)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.logz/guice-jersey/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.logz/guice-jersey)
 
+## ⚠️ Important Notice
+As of September 19, 2024, we have decided to no longer maintain this open-source project. Please feel free to fork the repository and continue its development or publish it independently. We appreciate your support and contributions thus far!
+
 ## Introduction
 Jersey comes with its own dependency injection framework for instantiating its classes.
+...
 If you're using Guice as your dependency injection framework, and you want to inject your own classes into the JAX-RS classes you created - such as Resources and Filters - you need to bridge the gap between the two DI frameworks.
 This module aims to do just that by booting Jetty based Jersey server and initializing the bridge between HK2 and Guice.
 
