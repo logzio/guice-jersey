@@ -8,7 +8,6 @@ As of September 19, 2024, we have decided to no longer maintain this open-source
 
 ## Introduction
 Jersey comes with its own dependency injection framework for instantiating its classes.
-...
 If you're using Guice as your dependency injection framework, and you want to inject your own classes into the JAX-RS classes you created - such as Resources and Filters - you need to bridge the gap between the two DI frameworks.
 This module aims to do just that by booting Jetty based Jersey server and initializing the bridge between HK2 and Guice.
 
